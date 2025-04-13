@@ -81,7 +81,7 @@ export function ProgressBar({
       <style jsx>{`
         .trail-visualization {
           width: 100%;
-          height: 40vh;
+          height: 50vh;
           min-height: 250px;
           max-height: 500px;
           background: linear-gradient(
@@ -95,22 +95,7 @@ export function ProgressBar({
           position: relative;
           overflow: hidden;
           border-radius: 8px;
-          padding: clamp(0.75rem, 3vw, 1.5rem);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        @media (min-width: 768px) {
-          .trail-visualization {
-            height: 45vh;
-            border-radius: 12px;
-          }
-        }
-
-        @media (min-width: 1024px) {
-          .trail-visualization {
-            height: 50vh;
-            border-radius: 16px;
-          }
+          padding: 0.5rem;
         }
 
         .camp-container {

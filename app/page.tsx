@@ -5,6 +5,8 @@ import { ProgressBar } from "@/components/training/ProgressBar";
 import { InfoCard } from "@/components/ui/InfoCard";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
+import PageCard from "@/components/layout/PageCard";
+import AppLayout from "@/components/layout/AppLayout";
 
 export default function Home() {
   // Sample data for the page
@@ -20,11 +22,11 @@ export default function Home() {
   ];
 
   return (
-    <>
-      {/* Countdown Timer - Outside the container to go full-width at top */}
-      <CountdownTimer targetDate={targetDate} />
+    <AppLayout>
+      <PageCard>
+        {/* Countdown Timer - Outside the container to go full-width at top */}
+        <CountdownTimer targetDate={targetDate} />
 
-      <div className="flex-1 flex flex-col justify-between">
         {/* Trail Visualization */}
         <ProgressBar
           camps={camps}
@@ -47,7 +49,7 @@ export default function Home() {
         <Link href="/workouts" className="workout-button-link mb-4">
           <Button isAnimated>Start Workout</Button>
         </Link>
-      </div>
-    </>
+      </PageCard>
+    </AppLayout>
   );
 }

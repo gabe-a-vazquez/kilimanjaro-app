@@ -51,6 +51,8 @@ export function InfoCard({
           padding: 1rem;
           margin: 1rem 0;
           box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+          max-width: 300px;
+          margin: 1.5rem auto 0;
         }
 
         .highlight {
