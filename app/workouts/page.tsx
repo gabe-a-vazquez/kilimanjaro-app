@@ -145,7 +145,7 @@ export default function WorkoutsPage() {
         <Header
           title="Training Schedule"
           onBackClick={handleBackClick}
-          rightElement={<div className="completion-percent">35%</div>}
+          rightElement={<div className="completion-badge">35%</div>}
           isFlushWithTop={true}
         />
 
@@ -175,16 +175,6 @@ export default function WorkoutsPage() {
         <style jsx>{`
           .week-cards {
             padding: 1.25rem;
-          }
-
-          .completion-percent {
-            background: linear-gradient(145deg, #ff9967, #ff7440);
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
           }
         `}</style>
       </PageCard>
