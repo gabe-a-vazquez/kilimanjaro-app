@@ -14,6 +14,7 @@ import Button from "@/components/ui/Button";
 const workoutData = {
   id: "1",
   name: "Lower Body Strength",
+  type: "Workout A",
   benefit: "Build leg strength for steep ascents",
   exercises: [
     {
@@ -73,14 +74,15 @@ export default function WorkoutPage() {
           title={workoutData.name}
           showBackButton
           onBackClick={handleBack}
+          isFlushWithTop={true}
         />
 
-        <div className="mb-6">
+        <div className="p-4 pt-6">
           <h2 className="text-lg font-medium text-green-200 mb-1">Benefit</h2>
           <p className="text-white">{workoutData.benefit}</p>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-6 px-4">
           {workoutData.exercises.map((exercise) => (
             <ExerciseCard key={exercise.id} name={exercise.name}>
               <div className="mt-4 space-y-4">
@@ -131,7 +133,7 @@ export default function WorkoutPage() {
           ))}
         </div>
 
-        <div className="mt-8">
+        <div className="mt-8 px-4">
           <Button onClick={handleComplete} fullWidth variant="primary">
             Complete Workout
           </Button>
