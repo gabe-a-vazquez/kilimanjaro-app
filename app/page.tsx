@@ -10,8 +10,7 @@ import AppLayout from "@/components/layout/AppLayout";
 
 export default function Home() {
   // Sample data for the page
-  const targetDate = new Date();
-  targetDate.setDate(targetDate.getDate() + 18); // 18 days from now
+  const targetDate = new Date("June 26, 2025");
 
   const camps = [
     { name: "Summit (Uhuru Peak)", elevation: "5,895 m" },

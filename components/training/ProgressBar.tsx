@@ -59,15 +59,24 @@ export function ProgressBar({
         ></div>
 
         {/* Camp locations */}
-        {camps.map((camp, index) => (
-          <div className="camp-item" key={index}>
-            <div className="camp-info">
-              <div className="camp-name">{camp.name}</div>
-              <div className="camp-elevation">{camp.elevation}</div>
+        {camps.map((camp, index) => {
+          // Calculate if this camp has been passed based on index and progress percentage
+          // Assuming camps are ordered from top to bottom (summit to base)
+          // The total height is divided equally among camps
+          const campPositionPercentage =
+            ((camps.length - 1 - index) / (camps.length - 1)) * 100;
+          const isPassed = progressPercentage >= campPositionPercentage;
+
+          return (
+            <div className="camp-item" key={index}>
+              <div className="camp-info">
+                <div className="camp-name">{camp.name}</div>
+                <div className="camp-elevation">{camp.elevation}</div>
+              </div>
+              <div className={`camp-dot ${isPassed ? "passed" : ""}`}></div>
             </div>
-            <div className="camp-dot"></div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Progress information overlay - only shown when user position is clicked */}
@@ -163,6 +172,12 @@ export function ProgressBar({
           position: absolute;
           right: clamp(14px, 3vw, 21px);
           box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+          transition: all 0.3s ease;
+        }
+
+        .camp-dot.passed {
+          background: linear-gradient(145deg, #ff9967, #ff7440);
+          box-shadow: 0 0 15px rgba(255, 127, 80, 0.7);
         }
 
         /* User position indicator */
