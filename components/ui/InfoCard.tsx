@@ -20,13 +20,12 @@ export function InfoCard({
   return (
     <div className={`info-card ${variant}`}>
       {imageSrc && (
-        <div className="info-card-image" role="img" aria-label={imageAlt}>
-          <style jsx>{`
-            .info-card-image {
-              background-image: url(${imageSrc});
-            }
-          `}</style>
-        </div>
+        <div
+          className="info-card-image"
+          role="img"
+          aria-label={imageAlt}
+          style={{ backgroundImage: `url(${imageSrc})` }}
+        />
       )}
       <div className="info-card-content">
         <h3 className="info-card-title">{title}</h3>
