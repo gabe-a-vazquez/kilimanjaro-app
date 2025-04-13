@@ -52,8 +52,10 @@
   --shadow-inset: inset 0 2px 6px rgba(0, 0, 0, 0.2);
 
   /* Typography */
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
 }
 
 @layer base {
@@ -68,6 +70,7 @@
     color: white;
     min-height: 100vh;
     font-family: var(--font-sans);
+    font-weight: 400;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -105,6 +108,7 @@
   p {
     margin-bottom: 1rem;
     line-height: 1.5;
+    letter-spacing: 0.015em;
   }
 
   a {
@@ -236,7 +240,7 @@
     font-feature-settings: "tnum";
     font-variant-numeric: tabular-nums;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-    letter-spacing: -0.01em;
+    letter-spacing: 0.03em;
   }
 
   .countdown-label {
@@ -244,7 +248,7 @@
     color: rgba(255, 255, 255, 0.7);
     margin-top: 0.25rem;
     font-weight: 500;
-    letter-spacing: 0;
+    letter-spacing: 0.02em;
   }
 
   .workout-button-link {
@@ -265,6 +269,22 @@
     .app-container {
       max-width: 1000px;
     }
+  }
+
+  .info-card-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.95);
+    margin: 0 0 0.5rem 0;
+    letter-spacing: 0.01em;
+  }
+
+  .info-card-text {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.5;
+    font-weight: 400;
+    letter-spacing: 0.01em;
   }
 }
 
