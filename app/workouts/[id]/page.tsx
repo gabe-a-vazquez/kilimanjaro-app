@@ -140,7 +140,7 @@ export default function WorkoutPage() {
           ))}
         </div>
 
-        <div className="mt-8 px-4">
+        <div className="complete-workout-button">
           <Button onClick={handleComplete} fullWidth variant="primary">
             Complete Workout
           </Button>

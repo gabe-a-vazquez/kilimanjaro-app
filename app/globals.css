@@ -271,6 +271,11 @@
     text-align: center;
   }
 
+  .complete-workout-button {
+    margin: 1.5rem;
+    width: calc(100% - 3rem);
+  }
+
   @media (min-width: 768px) {
     .app-container {
       max-width: 900px;
