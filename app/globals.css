@@ -63,12 +63,15 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    height: 100%;
+    overflow-x: hidden;
   }
 
   body {
     @apply bg-gradient-to-b from-[var(--bg-gradient-start)] to-[var(--bg-gradient-end)];
     color: white;
     min-height: 100vh;
+    height: 100vh;
     font-family: var(--font-sans);
     font-weight: 400;
     display: flex;
@@ -76,6 +79,7 @@
     align-items: center;
     margin: 0;
     padding: 0;
+    overflow-x: hidden;
   }
 
   h1,
@@ -189,7 +193,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-bottom: 16px;
+    padding: 0 16px 16px;
+    margin: 0 auto;
+    overflow-x: hidden;
+    flex: 1;
   }
 
   .countdown-container {
