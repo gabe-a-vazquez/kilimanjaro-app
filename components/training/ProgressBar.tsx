@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 
 interface CampInfo {
   name: string;
@@ -22,6 +22,12 @@ export function ProgressBar({
   progressPercentage,
   backgroundImage = "/images/trail-background.webp",
 }: ProgressBarProps) {
+  const [showInfo, setShowInfo] = useState(false);
+
+  const toggleInfo = () => {
+    setShowInfo(!showInfo);
+  };
+
   return (
     <div className="trail-visualization">
       <div className="camp-container">
@@ -31,7 +37,15 @@ export function ProgressBar({
         <div className="completed-trail"></div>
 
         {/* User position indicator */}
-        <div className="user-position"></div>
+        <div
+          className="user-position"
+          onClick={toggleInfo}
+          onKeyPress={(e) => e.key === "Enter" && toggleInfo()}
+          role="button"
+          tabIndex={0}
+          aria-label="Show current elevation"
+          title="Click to show current elevation"
+        ></div>
 
         {/* Camp locations */}
         {camps.map((camp, index) => (
@@ -45,16 +59,20 @@ export function ProgressBar({
         ))}
       </div>
 
-      {/* Progress information overlay */}
-      <div className="progress-info">
-        <div className="elevation-info">{currentElevation}</div>
-        <div className="approaching-info">Approaching: {approachingCamp}</div>
-      </div>
+      {/* Progress information overlay - only shown when user position is clicked */}
+      {showInfo && (
+        <div className="progress-info">
+          <div className="elevation-info">{currentElevation}</div>
+          <div className="approaching-info">Approaching: {approachingCamp}</div>
+        </div>
+      )}
 
       <style jsx>{`
         .trail-visualization {
           width: 100%;
-          height: 55%;
+          height: 40vh;
+          min-height: 250px;
+          max-height: 500px;
           background: linear-gradient(
               135deg,
               rgba(26, 69, 52, 0.65),
@@ -65,9 +83,23 @@ export function ProgressBar({
           background-position: center;
           position: relative;
           overflow: hidden;
-          border-radius: 0;
-          padding: 1rem;
+          border-radius: 8px;
+          padding: clamp(0.75rem, 3vw, 1.5rem);
           border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        @media (min-width: 768px) {
+          .trail-visualization {
+            height: 45vh;
+            border-radius: 12px;
+          }
+        }
+
+        @media (min-width: 1024px) {
+          .trail-visualization {
+            height: 50vh;
+            border-radius: 16px;
+          }
         }
 
         .camp-container {
@@ -83,7 +115,7 @@ export function ProgressBar({
           width: 2px;
           height: 100%;
           top: 0;
-          right: 30px;
+          right: clamp(20px, 5vw, 30px);
           z-index: 1;
           background-image: linear-gradient(
             to bottom,
@@ -103,16 +135,16 @@ export function ProgressBar({
           align-items: center;
           position: relative;
           z-index: 2;
-          padding-right: 50px;
+          padding-right: clamp(40px, 10vw, 50px);
         }
 
         .camp-info {
           text-align: right;
-          margin-right: 15px;
+          margin-right: clamp(10px, 2vw, 15px);
         }
 
         .camp-name {
-          font-size: 1rem;
+          font-size: clamp(0.75rem, 2vw, 1rem);
           font-weight: 600;
           color: white;
           white-space: nowrap;
@@ -120,7 +152,7 @@ export function ProgressBar({
         }
 
         .camp-elevation {
-          font-size: 0.875rem;
+          font-size: clamp(0.7rem, 1.5vw, 0.875rem);
           color: rgba(255, 255, 255, 0.9);
           font-feature-settings: "tnum";
           font-variant-numeric: tabular-nums;
@@ -128,28 +160,38 @@ export function ProgressBar({
         }
 
         .camp-dot {
-          width: 20px;
-          height: 20px;
+          width: clamp(12px, 4vw, 20px);
+          height: clamp(12px, 4vw, 20px);
           background-color: rgba(255, 255, 255, 0.9);
           border-radius: 50%;
           position: absolute;
-          right: 21px;
+          right: clamp(14px, 3vw, 21px);
           box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
         }
 
         /* User position indicator */
         .user-position {
           position: absolute;
-          width: 18px;
-          height: 18px;
+          width: clamp(12px, 3vw, 18px);
+          height: clamp(12px, 3vw, 18px);
           background: linear-gradient(145deg, #ff9967, #ff7440);
           border-radius: 50%;
           border: 2px solid rgba(255, 255, 255, 0.9);
           box-shadow: 0 0 20px rgba(255, 127, 80, 0.5);
           z-index: 4;
-          right: 22px;
+          right: clamp(15px, 3vw, 22px);
           bottom: ${progressPercentage}%;
           animation: pulse-glow 2s infinite;
+          cursor: pointer;
+          transition: transform 0.2s ease;
+        }
+
+        .user-position:hover {
+          transform: scale(1.2);
+        }
+
+        .user-position:active {
+          transform: scale(0.95);
         }
 
         @keyframes pulse-glow {
@@ -169,7 +211,7 @@ export function ProgressBar({
           position: absolute;
           width: 2px;
           bottom: 0;
-          right: 30px;
+          right: clamp(20px, 5vw, 30px);
           z-index: 2;
           height: ${progressPercentage}%;
           background-image: linear-gradient(
@@ -186,25 +228,37 @@ export function ProgressBar({
 
         .progress-info {
           position: absolute;
-          left: 1rem;
-          right: 1rem;
-          bottom: 1rem;
+          left: clamp(0.5rem, 2vw, 1rem);
+          right: clamp(0.5rem, 2vw, 1rem);
+          bottom: clamp(0.5rem, 2vw, 1rem);
           background: rgba(0, 0, 0, 0.4);
           backdrop-filter: blur(10px);
           -webkit-backdrop-filter: blur(10px);
           color: white;
-          padding: 1.25rem;
+          padding: clamp(0.75rem, 3vw, 1.25rem);
           text-align: center;
           z-index: 10;
-          width: calc(100% - 2rem);
-          border-radius: 16px;
+          width: calc(100% - clamp(1rem, 4vw, 2rem));
+          border-radius: clamp(8px, 3vw, 16px);
           border: 1px solid rgba(255, 255, 255, 0.1);
           box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
           overflow: hidden;
+          animation: fade-in 0.3s ease-out;
+        }
+
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
 
         .elevation-info {
-          font-size: 1.25rem;
+          font-size: clamp(1rem, 2.5vw, 1.25rem);
           font-weight: 600;
           margin-bottom: 0.5rem;
           color: white;
@@ -213,9 +267,18 @@ export function ProgressBar({
         }
 
         .approaching-info {
-          font-size: 0.9375rem;
+          font-size: clamp(0.8rem, 2vw, 0.9375rem);
           color: rgba(255, 255, 255, 0.9);
           font-weight: 400;
+        }
+
+        @media (min-width: 1280px) {
+          .progress-info {
+            max-width: 80%;
+            margin: 0 auto;
+            left: 0;
+            right: 0;
+          }
         }
       `}</style>
     </div>
