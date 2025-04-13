@@ -68,6 +68,12 @@
     color: white;
     min-height: 100vh;
     font-family: var(--font-sans);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 16px;
   }
 
   h1,
@@ -172,6 +178,28 @@
   .btn-accent:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-strong);
+  }
+
+  .app-container {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .workout-button-link {
+    display: block;
+    width: 100%;
+    max-width: 400px;
+    margin: 1.5rem auto 0;
+    text-align: center;
+  }
+
+  @media (min-width: 768px) {
+    .app-container {
+      max-width: 800px;
+    }
   }
 }
 

@@ -8,6 +8,7 @@ interface InfoCardProps {
   imageSrc?: string;
   imageAlt?: string;
   variant?: "default" | "highlight";
+  className?: string;
 }
 
 export function InfoCard({
@@ -16,9 +17,10 @@ export function InfoCard({
   imageSrc,
   imageAlt = "Information image",
   variant = "default",
+  className = "",
 }: InfoCardProps) {
   return (
-    <div className={`info-card ${variant}`}>
+    <div className={`info-card ${variant} ${className}`}>
       {imageSrc && (
         <div
           className="info-card-image"

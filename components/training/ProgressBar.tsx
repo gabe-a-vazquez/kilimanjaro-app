@@ -13,6 +13,7 @@ interface ProgressBarProps {
   approachingCamp: string;
   progressPercentage: number;
   backgroundImage?: string;
+  className?: string;
 }
 
 export function ProgressBar({
@@ -21,6 +22,7 @@ export function ProgressBar({
   approachingCamp,
   progressPercentage,
   backgroundImage = "/images/trail-background.webp",
+  className = "",
 }: ProgressBarProps) {
   const [showInfo, setShowInfo] = useState(false);
 
@@ -29,12 +31,20 @@ export function ProgressBar({
   };
 
   return (
-    <div className="trail-visualization">
+    <div
+      className={`trail-visualization w-full ${className}`}
+      style={{
+        backgroundImage: `linear-gradient(135deg, rgba(26, 69, 52, 0.65), rgba(12, 44, 29, 0.7)), url("${backgroundImage}")`,
+      }}
+    >
       <div className="camp-container">
         <div className="trail-line"></div>
 
         {/* Completed trail section */}
-        <div className="completed-trail"></div>
+        <div
+          className="completed-trail"
+          style={{ height: `${progressPercentage}%` }}
+        ></div>
 
         {/* User position indicator */}
         <div
@@ -45,6 +55,7 @@ export function ProgressBar({
           tabIndex={0}
           aria-label="Show current elevation"
           title="Click to show current elevation"
+          style={{ bottom: `${progressPercentage}%` }}
         ></div>
 
         {/* Camp locations */}

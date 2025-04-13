@@ -1,5 +1,5 @@
-import { AppLayout } from "@/components/layout/AppLayout";
-import { PageCard } from "@/components/layout/PageCard";
+"use client";
+
 import { CountdownTimer } from "@/components/training/CountdownTimer";
 import { ProgressBar } from "@/components/training/ProgressBar";
 import { InfoCard } from "@/components/ui/InfoCard";
@@ -20,38 +20,31 @@ export default function Home() {
   ];
 
   return (
-    <AppLayout>
-      <PageCard>
-        {/* Countdown Timer */}
-        <CountdownTimer targetDate={targetDate} />
+    <main className="app-container">
+      {/* Countdown Timer */}
+      <CountdownTimer targetDate={targetDate} />
 
-        {/* Trail Visualization */}
-        <ProgressBar
-          camps={camps}
-          currentElevation="Current Elevation: ~1,800 m (Rainforest Zone)"
-          approachingCamp="Machame Camp"
-          progressPercentage={20}
-        />
+      {/* Trail Visualization */}
+      <ProgressBar
+        camps={camps}
+        currentElevation="Current Elevation: ~1,800 m (Rainforest Zone)"
+        approachingCamp="Machame Camp"
+        progressPercentage={20}
+      />
 
-        {/* Fun Fact */}
-        <div style={{ padding: "0 1rem" }}>
-          <InfoCard
-            title="Tanzania Fun Fact"
-            imageSrc="/images/tanzania-wildlife.webp"
-          >
-            Tanzania is home to over 4 million wild animals and 1,000 bird
-            species.
-          </InfoCard>
+      {/* Fun Fact */}
+      <InfoCard
+        title="Tanzania Fun Fact"
+        imageSrc="/images/tanzania-wildlife.webp"
+        className="mt-6 w-full"
+      >
+        Tanzania is home to over 4 million wild animals and 1,000 bird species.
+      </InfoCard>
 
-          {/* Navigation Button */}
-          <Link
-            href="/workouts"
-            style={{ display: "block", margin: "1rem 0 1.5rem" }}
-          >
-            <Button isAnimated>Start Workout</Button>
-          </Link>
-        </div>
-      </PageCard>
-    </AppLayout>
+      {/* Navigation Button */}
+      <Link href="/workouts" className="workout-button-link">
+        <Button isAnimated>Start Workout</Button>
+      </Link>
+    </main>
   );
 }

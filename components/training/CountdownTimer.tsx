@@ -60,7 +60,7 @@ export function CountdownTimer({
   };
 
   return (
-    <div className={`countdown-container ${className}`}>
+    <div className={`countdown-container w-full ${className}`}>
       <div className="countdown-numbers">
         <div className="countdown-unit">
           <div className="countdown-number">
