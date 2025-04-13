@@ -192,18 +192,6 @@
     box-shadow: var(--shadow-strong);
   }
 
-  .app-container {
-    width: 100%;
-    max-width: 800px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 0 16px 16px;
-    margin: 0 auto;
-    overflow-x: hidden;
-    flex: 1;
-  }
-
   .countdown-container {
     width: 100%;
     background: linear-gradient(
@@ -274,18 +262,6 @@
   .complete-workout-button {
     margin: 1.5rem;
     width: calc(100% - 3rem);
-  }
-
-  @media (min-width: 768px) {
-    .app-container {
-      max-width: 900px;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .app-container {
-      max-width: 1000px;
-    }
   }
 
   .info-card-title {

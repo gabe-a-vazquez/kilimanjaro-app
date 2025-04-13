@@ -24,7 +24,7 @@ export default function Home() {
       {/* Countdown Timer - Outside the container to go full-width at top */}
       <CountdownTimer targetDate={targetDate} />
 
-      <main className="app-container flex-1 flex flex-col justify-between">
+      <div className="flex-1 flex flex-col justify-between">
         {/* Trail Visualization */}
         <ProgressBar
           camps={camps}
@@ -47,7 +47,7 @@ export default function Home() {
         <Link href="/workouts" className="workout-button-link mb-4">
           <Button isAnimated>Start Workout</Button>
         </Link>
-      </main>
+      </div>
     </>
   );
 }
