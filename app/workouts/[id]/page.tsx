@@ -15,7 +15,8 @@ const workoutData = {
   id: "1",
   name: "Lower Body Strength",
   type: "Workout A",
-  benefit: "Build leg strength for steep ascents",
+  benefit:
+    "Builds lower body strength needed for steep ascents and long hiking days on varying terrains.",
   exercises: [
     {
       id: "ex1",
@@ -75,11 +76,18 @@ export default function WorkoutPage() {
           showBackButton
           onBackClick={handleBack}
           isFlushWithTop={true}
+          rightElement={
+            <div className="completion-badge workout-type">
+              {workoutData.type}
+            </div>
+          }
         />
 
-        <div className="p-4 pt-6">
-          <h2 className="text-lg font-medium text-green-200 mb-1">Benefit</h2>
-          <p className="text-white">{workoutData.benefit}</p>
+        <div className="px-4 pt-6">
+          <div className="benefit-card">
+            <div className="benefit-icon">🏔️</div>
+            <div className="benefit-text">{workoutData.benefit}</div>
+          </div>
         </div>
 
         <div className="space-y-6 px-4">
