@@ -25,24 +25,17 @@ export function ExerciseCard({
 
       <style jsx>{`
         .exercise-card {
-          background: linear-gradient(
-            145deg,
-            rgba(26, 69, 52, 0.5),
-            rgba(12, 44, 29, 0.5)
-          );
-          backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px);
+          background: #0a2518;
           border-radius: 16px;
           overflow: hidden;
           border: 1px solid rgba(255, 255, 255, 0.05);
-          margin-bottom: 1rem;
           box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
           color: white;
           width: 100%;
         }
 
         .exercise-header {
-          padding: 1rem;
+          padding: 1rem 1.25rem;
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -51,23 +44,24 @@ export function ExerciseCard({
             rgba(32, 85, 64, 0.6),
             rgba(26, 69, 52, 0.6)
           );
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .exercise-name {
           font-weight: 600;
-          font-size: 1.125rem;
+          font-size: 1.25rem;
           letter-spacing: -0.01em;
         }
 
         .exercise-icon {
-          font-size: 1.25rem;
+          font-size: 1.5rem;
           display: flex;
           align-items: center;
           justify-content: center;
         }
 
         .exercise-content {
-          padding: 1rem;
+          padding: 1.25rem;
         }
       `}</style>
     </div>

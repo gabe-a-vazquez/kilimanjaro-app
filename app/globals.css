@@ -134,6 +134,11 @@
     overflow: hidden;
   }
 
+  .exercise-card {
+    margin: 1rem;
+    width: calc(100% - 2rem) !important;
+  }
+
   .glass-card {
     background: var(--glass-bg);
     backdrop-filter: var(--backdrop-blur);
@@ -456,45 +461,53 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.75rem 1rem;
-    background: rgba(6, 20, 14, 0.9);
+    padding: 0.75rem;
+    background: rgba(0, 0, 0, 0.2);
     border-radius: 8px;
     margin-bottom: 0.75rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    border-left: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  }
+
+  .set-row:last-child {
+    margin-bottom: 0;
   }
 
   .set-label {
     font-weight: 500;
     color: rgba(255, 255, 255, 0.9);
-    font-size: 1.25rem;
+    min-width: 3.5rem;
   }
 
   .set-details {
     display: flex;
-    gap: 2rem;
+    gap: 1rem;
     align-items: center;
+    flex-wrap: wrap;
   }
 
   .set-detail {
     text-align: center;
+    min-width: 60px;
   }
 
   .set-detail-label {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: rgba(255, 255, 255, 0.6);
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.2rem;
   }
 
   .set-detail-value {
     font-weight: 600;
-    font-size: 1.25rem;
+    font-size: 0.95rem;
     font-feature-settings: "tnum";
     font-variant-numeric: tabular-nums;
-    color: white;
+  }
+
+  .set-right-element {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
   }
 
   .weight-input {
@@ -504,11 +517,11 @@
     background: rgba(26, 69, 52, 0.3);
     border-radius: 10px;
     padding: 0.35rem 0.5rem;
+    width: 90px;
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2),
       0 1px 1px rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
     position: relative;
-    margin-left: 1rem;
   }
 
   .weight-value {
@@ -519,7 +532,6 @@
     font-feature-settings: "tnum";
     font-variant-numeric: tabular-nums;
     color: white;
-    font-size: 1.25rem;
   }
 
   .weight-unit {
