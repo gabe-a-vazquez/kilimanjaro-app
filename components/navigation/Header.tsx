@@ -8,6 +8,7 @@ interface HeaderProps {
   onBackClick?: () => void;
   rightElement?: React.ReactNode;
   showBackButton?: boolean;
+  isFlushWithTop?: boolean;
 }
 
 export function Header({
@@ -15,9 +16,12 @@ export function Header({
   onBackClick,
   rightElement,
   showBackButton = true,
+  isFlushWithTop = false,
 }: HeaderProps) {
+  const containerClass = isFlushWithTop ? "page-header" : "header";
+
   return (
-    <div className="header">
+    <div className={containerClass}>
       {showBackButton ? (
         <BackButton onClick={onBackClick || (() => window.history.back())} />
       ) : (

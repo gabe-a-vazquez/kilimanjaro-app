@@ -146,6 +146,7 @@ export default function WorkoutsPage() {
           title="Training Schedule"
           onBackClick={handleBackClick}
           rightElement={<div className="completion-percent">35%</div>}
+          isFlushWithTop={true}
         />
 
         <div className="week-cards">
