@@ -122,15 +122,7 @@ export function ProgressBar({
           top: 0;
           right: clamp(20px, 5vw, 30px);
           z-index: 1;
-          background-image: linear-gradient(
-            to bottom,
-            rgba(255, 255, 255, 0.7) 50%,
-            rgba(255, 255, 255, 0.2) 0%
-          );
-          background-position: right;
-          background-size: 2px 15px;
-          background-repeat: repeat-y;
-          background-color: transparent;
+          background: rgba(255, 255, 255, 0.8);
           filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.3));
         }
 
@@ -225,15 +217,7 @@ export function ProgressBar({
           right: clamp(20px, 5vw, 30px);
           z-index: 2;
           height: ${progressPercentage}%;
-          background-image: linear-gradient(
-            to bottom,
-            rgba(255, 127, 80, 0.9) 50%,
-            rgba(255, 127, 80, 0.3) 0%
-          );
-          background-position: right;
-          background-size: 2px 15px;
-          background-repeat: repeat-y;
-          background-color: transparent;
+          background: linear-gradient(to top, #ff7440, #ff9967);
           filter: drop-shadow(0 0 5px rgba(255, 127, 80, 0.5));
         }
 
