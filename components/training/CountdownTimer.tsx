@@ -60,7 +60,7 @@ export function CountdownTimer({
   };
 
   return (
-    <div className={`countdown-container w-full ${className}`}>
+    <div className={`countdown-container ${className}`}>
       <div className="countdown-numbers">
         <div className="countdown-unit">
           <div className="countdown-number">
@@ -87,66 +87,6 @@ export function CountdownTimer({
           <div className="countdown-label">Secs</div>
         </div>
       </div>
-
-      <style jsx>{`
-        .countdown-container {
-          width: 100%;
-          background: linear-gradient(
-            to bottom,
-            rgba(10, 40, 25, 0.8),
-            rgba(10, 40, 25, 0.7)
-          );
-          backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px);
-          padding: 0.75rem 1rem;
-          text-align: center;
-          color: white;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .countdown-numbers {
-          display: flex;
-          justify-content: center;
-          width: 100%;
-        }
-
-        .countdown-unit {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          margin: 0 0.5rem;
-          position: relative;
-        }
-
-        .countdown-unit:not(:last-child)::after {
-          content: ":";
-          position: absolute;
-          right: -0.75rem;
-          top: 0;
-          font-size: 1.5rem;
-          font-weight: 600;
-          color: rgba(255, 255, 255, 0.7);
-        }
-
-        .countdown-number {
-          font-size: 2rem;
-          font-weight: 600;
-          color: white;
-          line-height: 1;
-          font-feature-settings: "tnum";
-          font-variant-numeric: tabular-nums;
-          text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-          letter-spacing: -0.01em;
-        }
-
-        .countdown-label {
-          font-size: 0.75rem;
-          color: rgba(255, 255, 255, 0.7);
-          margin-top: 0.25rem;
-          font-weight: 500;
-          letter-spacing: 0;
-        }
-      `}</style>
     </div>
   );
 }

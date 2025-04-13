@@ -20,31 +20,34 @@ export default function Home() {
   ];
 
   return (
-    <main className="app-container">
-      {/* Countdown Timer */}
+    <>
+      {/* Countdown Timer - Outside the container to go full-width at top */}
       <CountdownTimer targetDate={targetDate} />
 
-      {/* Trail Visualization */}
-      <ProgressBar
-        camps={camps}
-        currentElevation="Current Elevation: ~1,800 m (Rainforest Zone)"
-        approachingCamp="Machame Camp"
-        progressPercentage={20}
-      />
+      <main className="app-container">
+        {/* Trail Visualization */}
+        <ProgressBar
+          camps={camps}
+          currentElevation="Current Elevation: ~1,800 m (Rainforest Zone)"
+          approachingCamp="Machame Camp"
+          progressPercentage={20}
+        />
 
-      {/* Fun Fact */}
-      <InfoCard
-        title="Tanzania Fun Fact"
-        imageSrc="/images/tanzania-wildlife.webp"
-        className="mt-6 w-full"
-      >
-        Tanzania is home to over 4 million wild animals and 1,000 bird species.
-      </InfoCard>
+        {/* Fun Fact */}
+        <InfoCard
+          title="Tanzania Fun Fact"
+          imageSrc="/images/tanzania-wildlife.webp"
+          className="mt-6 w-full"
+        >
+          Tanzania is home to over 4 million wild animals and 1,000 bird
+          species.
+        </InfoCard>
 
-      {/* Navigation Button */}
-      <Link href="/workouts" className="workout-button-link">
-        <Button isAnimated>Start Workout</Button>
-      </Link>
-    </main>
+        {/* Navigation Button */}
+        <Link href="/workouts" className="workout-button-link">
+          <Button isAnimated>Start Workout</Button>
+        </Link>
+      </main>
+    </>
   );
 }
