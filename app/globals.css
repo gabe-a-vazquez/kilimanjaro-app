@@ -450,6 +450,117 @@
     display: flex;
     flex-direction: column;
   }
+
+  /* Exercise components styling */
+  .set-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: rgba(6, 20, 14, 0.9);
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-left: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  }
+
+  .set-label {
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.25rem;
+  }
+
+  .set-details {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .set-detail {
+    text-align: center;
+  }
+
+  .set-detail-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.25rem;
+  }
+
+  .set-detail-value {
+    font-weight: 600;
+    font-size: 1.25rem;
+    font-feature-settings: "tnum";
+    font-variant-numeric: tabular-nums;
+    color: white;
+  }
+
+  .weight-input {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(26, 69, 52, 0.3);
+    border-radius: 10px;
+    padding: 0.35rem 0.5rem;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2),
+      0 1px 1px rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    margin-left: 1rem;
+  }
+
+  .weight-value {
+    margin: 0 0.4rem;
+    font-weight: 600;
+    min-width: 24px;
+    text-align: center;
+    font-feature-settings: "tnum";
+    font-variant-numeric: tabular-nums;
+    color: white;
+    font-size: 1.25rem;
+  }
+
+  .weight-unit {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-right: 0.1rem;
+  }
+
+  .weight-button {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: linear-gradient(
+      145deg,
+      rgba(26, 69, 52, 0.8),
+      rgba(12, 44, 29, 0.8)
+    );
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 0.9rem;
+    user-select: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 150ms ease;
+    color: rgba(255, 255, 255, 0.9);
+    border: none;
+    padding: 0;
+    line-height: 1;
+  }
+
+  .weight-button:hover {
+    background: linear-gradient(145deg, #ff9967, #ff7440);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+  }
+
+  .weight-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
 }
 
 @layer utilities {

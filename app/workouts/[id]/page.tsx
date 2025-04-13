@@ -104,28 +104,27 @@ export default function WorkoutPage() {
                         key={index}
                         setNumber={index + 1}
                         details={[
-                          { label: "Reps", value: exercise.reps },
+                          { label: "REPS", value: exercise.reps },
                           {
-                            label: "Rest",
+                            label: "REST",
                             value:
                               index < exercise.sets - 1
                                 ? `${exercise.restTime}s`
                                 : "0s",
                           },
                         ]}
+                        rightElement={
+                          <WeightInput
+                            initialValue={weights[exercise.id] || 0}
+                            onChange={(value) =>
+                              handleWeightChange(exercise.id, value)
+                            }
+                            unit="lbs"
+                          />
+                        }
                       />
                     ))}
                   </div>
-                </div>
-
-                <div>
-                  <h3 className="text-sm font-medium text-gray-200 mb-2">
-                    Weight Used (kg)
-                  </h3>
-                  <WeightInput
-                    initialValue={weights[exercise.id] || 0}
-                    onChange={(value) => handleWeightChange(exercise.id, value)}
-                  />
                 </div>
 
                 {exercise.tips.length > 0 && (
