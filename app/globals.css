@@ -367,8 +367,8 @@
     padding: 1rem 1.5rem;
     background: linear-gradient(
       145deg,
-      rgba(26, 69, 52, 0.25),
-      rgba(12, 44, 29, 0.2)
+      rgba(16, 40, 30, 0.9),
+      rgba(6, 20, 14, 0.85)
     );
     margin: 1rem;
     border-radius: 20px;
@@ -419,7 +419,15 @@
     align-items: center;
     justify-content: center;
     margin-right: 1rem;
-    color: var(--sunrise-orange);
+    font-size: 1.75rem;
+    background: linear-gradient(
+      145deg,
+      var(--orange-gradient-start),
+      var(--orange-gradient-end)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
     filter: drop-shadow(0 2px 8px rgba(255, 127, 80, 0.8));
     position: relative;
     z-index: 2;
