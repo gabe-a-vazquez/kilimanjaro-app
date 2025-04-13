@@ -20,7 +20,7 @@ export function ProgressBar({
   currentElevation,
   approachingCamp,
   progressPercentage,
-  backgroundImage = "/images/kilimanjaro-background.webp",
+  backgroundImage = "/images/trail-background.webp",
 }: ProgressBarProps) {
   return (
     <div className="trail-visualization">
