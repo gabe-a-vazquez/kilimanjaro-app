@@ -159,7 +159,7 @@ export function ProgressBar({
         .camp-dot {
           width: clamp(12px, 4vw, 20px);
           height: clamp(12px, 4vw, 20px);
-          background-color: rgba(255, 255, 255, 0.9);
+          background-color: rgba(255, 255, 255, 1);
           border-radius: 50%;
           position: absolute;
           right: clamp(14px, 3vw, 21px);
