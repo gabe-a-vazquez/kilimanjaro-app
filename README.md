@@ -28,6 +28,30 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Supabase Setup
+
+This project uses Supabase for the backend. To set up Supabase locally:
+
+1. Make sure Docker Desktop is installed and running
+2. Run the following command to start Supabase locally:
+
+```bash
+npx supabase start
+```
+
+3. Supabase services will be available at:
+
+   - API: http://127.0.0.1:54321
+   - Studio: http://127.0.0.1:54323
+
+4. You can test the Supabase connection by visiting `/supabase-test` route
+
+To stop the local Supabase instance:
+
+```bash
+npx supabase stop
+```
+
 ## Image Resources
 
 Before running the application, make sure to add the required images:
@@ -65,6 +89,7 @@ This project uses:
 - TypeScript for type safety
 - Tailwind CSS for styling
 - Custom React hooks for state management
+- Supabase for backend services
 
 ## License
 
