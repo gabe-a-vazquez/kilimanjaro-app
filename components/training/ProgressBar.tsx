@@ -1,14 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-
-interface CampInfo {
-  name: string;
-  elevation: string;
-}
+import { Camp } from "@/services/campService";
 
 interface ProgressBarProps {
-  camps: CampInfo[];
+  camps: Camp[];
   currentElevation: string;
   approachingCamp: string;
   progressPercentage: number;
@@ -68,7 +64,7 @@ export function ProgressBar({
           const isPassed = progressPercentage >= campPositionPercentage;
 
           return (
-            <div className="camp-item" key={index}>
+            <div className="camp-item" key={camp.id || index}>
               <div className="camp-info">
                 <div className="camp-name">{camp.name}</div>
                 <div className="camp-elevation">{camp.elevation}</div>

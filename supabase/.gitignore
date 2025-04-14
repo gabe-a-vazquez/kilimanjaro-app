@@ -8,3 +8,6 @@ config.toml
 .env.local
 .env.*.local
 
+migrations
+
+seed.sql
