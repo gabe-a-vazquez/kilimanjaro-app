@@ -29,6 +29,7 @@ type WorkoutData = {
   benefit: string | null;
   warmup: string | null;
   exercises: WorkoutExercise[];
+  status: string;
 };
 
 export default function WorkoutPage() {
@@ -111,6 +112,7 @@ export default function WorkoutPage() {
           benefit: workout.benefit,
           warmup: workout.warmup,
           exercises: formattedExercises,
+          status: workout.status,
         });
       } catch (err) {
         console.error("Error fetching workout data:", err);
@@ -294,8 +296,17 @@ export default function WorkoutPage() {
         </div>
 
         <div className="complete-workout-button">
-          <Button onClick={handleComplete} fullWidth variant="primary">
-            Complete Workout
+          <Button
+            onClick={handleComplete}
+            fullWidth
+            variant={
+              workoutData.status === "completed" ? "secondary" : "primary"
+            }
+            disabled={workoutData.status === "completed"}
+          >
+            {workoutData.status === "completed"
+              ? "Workout Complete!"
+              : "Complete Workout"}
           </Button>
         </div>
       </div>
