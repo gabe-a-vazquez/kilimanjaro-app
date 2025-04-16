@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { createClient } from "@/lib/supabase";
 import AppLayout from "@/components/layout/AppLayout";
 import Header from "@/components/navigation/Header";
 import ExerciseCard from "@/components/exercises/ExerciseCard";
@@ -10,46 +11,119 @@ import WeightInput from "@/components/exercises/WeightInput";
 import TipsList from "@/components/exercises/TipsList";
 import Button from "@/components/ui/Button";
 
-// Mock data - would come from API/database in real implementation
-const workoutData = {
-  id: "1",
-  name: "Lower Body Strength",
-  type: "Workout A",
-  benefit:
-    "Builds lower body strength needed for steep ascents and long hiking days on varying terrains.",
-  exercises: [
-    {
-      id: "ex1",
-      name: "Squats",
-      sets: 3,
-      reps: 12,
-      restTime: 60,
-      tips: [
-        "Keep your back straight",
-        "Knees should not extend beyond toes",
-        "Breathe out as you push up",
-      ],
-      videoUrl: "https://youtube.com/embed/QKKZ9AGYTi4",
-    },
-    {
-      id: "ex2",
-      name: "Lunges",
-      sets: 3,
-      reps: 10,
-      restTime: 45,
-      tips: [
-        "Step forward far enough to create 90° angles with both legs",
-        "Keep your upper body straight",
-        "Lower your hips, not your torso",
-      ],
-      videoUrl: "https://youtube.com/embed/QOVaHwm-Q6U",
-    },
-  ],
+type WorkoutExercise = {
+  id: number;
+  name: string;
+  sets: number;
+  reps: number;
+  restTime: number;
+  tips: string[];
+  videoUrl: string | null;
+};
+
+type WorkoutData = {
+  id: number;
+  name: string;
+  type: string;
+  date: Date;
+  benefit: string | null;
+  warmup: string | null;
+  exercises: WorkoutExercise[];
 };
 
 export default function WorkoutPage() {
+  const params = useParams();
   const router = useRouter();
   const [weights, setWeights] = useState<Record<string, number>>({});
+  const [workoutData, setWorkoutData] = useState<WorkoutData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const supabase = createClient();
+  const workoutId = params?.id as string;
+
+  useEffect(() => {
+    async function fetchWorkoutData() {
+      if (!workoutId) return;
+
+      try {
+        setIsLoading(true);
+        setError(null);
+        console.log("Fetching workout:", workoutId);
+
+        // Fetch workout details
+        const { data: workout, error: workoutError } = await supabase
+          .from("workouts")
+          .select("*")
+          .eq("id", parseInt(workoutId))
+          .single();
+
+        if (workoutError) {
+          throw new Error(`Failed to fetch workout: ${workoutError.message}`);
+        }
+
+        if (!workout) {
+          throw new Error("Workout not found");
+        }
+
+        console.log("Found workout:", workout);
+
+        // Fetch workout exercises with exercise details
+        const { data: exercises, error: exercisesError } = await supabase
+          .from("workout_exercises")
+          .select(
+            `
+            *,
+            exercises:exercise_id (
+              id,
+              name,
+              video_url
+            )
+          `
+          )
+          .eq("workout_id", workout.id)
+          .order("sequence_number");
+
+        console.log("Exercises query result:", exercises);
+
+        if (exercisesError) {
+          throw new Error(
+            `Failed to fetch exercises: ${exercisesError.message}`
+          );
+        }
+
+        // Transform the data into the expected format
+        const formattedExercises: WorkoutExercise[] =
+          exercises?.map((ex) => ({
+            id: ex.exercise_id,
+            name: ex.exercises?.name || `Exercise ${ex.exercise_id}`,
+            sets: ex.sets,
+            reps: ex.reps,
+            restTime: ex.rest_time,
+            videoUrl: ex.exercises?.video_url,
+            tips: [], // We'll need to add tips to the database if needed
+          })) || [];
+
+        setWorkoutData({
+          id: workout.id,
+          name: workout.name,
+          type: workout.type,
+          date: new Date(workout.date),
+          benefit: workout.benefit,
+          warmup: workout.warmup,
+          exercises: formattedExercises,
+        });
+      } catch (err) {
+        console.error("Error fetching workout data:", err);
+        setError(
+          err instanceof Error ? err.message : "An unknown error occurred"
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchWorkoutData();
+  }, [supabase, workoutId]);
 
   const handleWeightChange = (exerciseId: string, value: number) => {
     setWeights((prev) => ({
@@ -62,11 +136,59 @@ export default function WorkoutPage() {
     router.push("/workouts");
   };
 
-  const handleComplete = () => {
-    // In a real app, you would save the workout completion with weights
-    console.log("Workout completed with weights:", weights);
-    router.push("/dashboard");
+  const handleComplete = async () => {
+    try {
+      // Save the workout completion with weights
+      const { error: trackingError } = await supabase
+        .from("weight_tracking")
+        .insert(
+          Object.entries(weights).map(([exerciseId, weight]) => ({
+            user_id: null, // Will be set by RLS policy
+            workout_id: workoutData?.id,
+            exercise_id: parseInt(exerciseId),
+            weight_lbs: weight,
+            reps_completed:
+              workoutData?.exercises.find((e) => e.id === parseInt(exerciseId))
+                ?.reps || 0,
+            set_number: 1,
+            date_recorded: new Date().toISOString().split("T")[0],
+          }))
+        );
+
+      if (trackingError) {
+        throw new Error(`Failed to save weights: ${trackingError.message}`);
+      }
+
+      router.push("/dashboard");
+    } catch (err) {
+      console.error("Error completing workout:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to complete workout"
+      );
+    }
   };
+
+  if (isLoading) {
+    return (
+      <AppLayout>
+        <div className="flex justify-center items-center min-h-screen">
+          <div className="text-gray-400">Loading workout...</div>
+        </div>
+      </AppLayout>
+    );
+  }
+
+  if (error || !workoutData) {
+    return (
+      <AppLayout>
+        <div className="flex justify-center items-center min-h-screen">
+          <div className="text-red-500">
+            {error || "Failed to load workout"}
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>
@@ -102,7 +224,7 @@ export default function WorkoutPage() {
                     {Array.from({ length: exercise.sets }).map((_, index) => (
                       <SetRow
                         key={index}
-                        setNumber={index + 1}
+                        number={index + 1}
                         details={[
                           { label: "REPS", value: exercise.reps },
                           {
@@ -117,7 +239,7 @@ export default function WorkoutPage() {
                           <WeightInput
                             initialValue={weights[exercise.id] || 0}
                             onChange={(value) =>
-                              handleWeightChange(exercise.id, value)
+                              handleWeightChange(exercise.id.toString(), value)
                             }
                             unit="lbs"
                           />
@@ -127,12 +249,28 @@ export default function WorkoutPage() {
                   </div>
                 </div>
 
-                {exercise.tips.length > 0 && (
+                {exercise.tips && exercise.tips.length > 0 && (
                   <div>
                     <h3 className="text-sm font-medium text-gray-200 mb-2">
                       Tips
                     </h3>
                     <TipsList tips={exercise.tips} />
+                  </div>
+                )}
+
+                {exercise.videoUrl && (
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-200 mb-2">
+                      Video Guide
+                    </h3>
+                    <div className="aspect-video rounded-lg overflow-hidden">
+                      <iframe
+                        src={exercise.videoUrl}
+                        className="w-full h-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    </div>
                   </div>
                 )}
               </div>

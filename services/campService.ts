@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase";
 
 export type Camp = {
   id: number;
@@ -8,6 +8,7 @@ export type Camp = {
 };
 
 export async function getCamps(): Promise<Camp[]> {
+  const supabase = createClient();
   const { data, error } = await supabase
     .from("camps")
     .select("*")

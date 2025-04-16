@@ -1,7 +1,16 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { Database } from "./database.types";
 
-// These environment variables are set after running `npx supabase start`
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+export const createClient = () => {
+  const supabase = createClientComponentClient<Database>();
+  return supabase;
+};
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Helper function to handle Supabase errors
+export const handleSupabaseError = (error: any): string => {
+  console.error("Supabase error:", error);
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return "An unknown error occurred";
+};
