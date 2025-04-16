@@ -83,7 +83,7 @@ export default function Home() {
 
         {/* Navigation Button */}
         <Link href="/workouts" className="workout-button-link mb-4">
-          <Button isAnimated>Start Workout</Button>
+          <Button isAnimated>Training Plan</Button>
         </Link>
       </PageCard>
     </AppLayout>
