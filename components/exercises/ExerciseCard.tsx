@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase";
 
 interface ExerciseCardProps {
@@ -26,6 +26,39 @@ export function ExerciseCard({
   const [isSaving, setIsSaving] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const supabase = createClient();
+
+  useEffect(() => {
+    async function checkCompletionStatus() {
+      if (!workoutId || !exerciseId) {
+        console.log("Missing required IDs:", { workoutId, exerciseId });
+        return;
+      }
+
+      try {
+        const { count, error } = await supabase
+          .from("weight_tracking")
+          .select("*", { count: "exact", head: true })
+          .eq("workout_id", workoutId)
+          .eq("exercise_id", exerciseId);
+
+        if (error) {
+          console.error("Supabase error:", {
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code,
+          });
+          return;
+        }
+
+        setIsCompleted(count ? count > 0 : false);
+      } catch (err) {
+        console.error("Unexpected error checking completion status:", err);
+      }
+    }
+
+    checkCompletionStatus();
+  }, [exerciseId, workoutId]);
 
   const handleSave = async () => {
     try {
