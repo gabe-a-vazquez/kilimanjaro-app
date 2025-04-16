@@ -351,7 +351,10 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      complete_workout: {
+        Args: { workout_id: number };
+        Returns: undefined;
+      };
     };
     Enums: {
       [_ in never]: never;

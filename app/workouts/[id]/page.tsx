@@ -138,16 +138,20 @@ export default function WorkoutPage() {
 
   const handleComplete = async () => {
     try {
+      if (!workoutData?.id) {
+        throw new Error("Workout ID is missing");
+      }
+
       // Save the workout completion with weights
       const { error: trackingError } = await supabase
         .from("weight_tracking")
         .insert(
           Object.entries(weights).map(([exerciseId, weight]) => ({
-            workout_id: workoutData?.id,
+            workout_id: workoutData.id,
             exercise_id: parseInt(exerciseId),
             weight_lbs: weight,
             reps_completed:
-              workoutData?.exercises.find((e) => e.id === parseInt(exerciseId))
+              workoutData.exercises.find((e) => e.id === parseInt(exerciseId))
                 ?.reps || 0,
             set_number: 1,
             date_recorded: new Date().toISOString().split("T")[0],
@@ -157,6 +161,18 @@ export default function WorkoutPage() {
       if (trackingError) {
         console.error("Error saving weights:", trackingError);
         throw new Error(`Failed to save weights: ${trackingError.message}`);
+      }
+
+      // Direct SQL update for the workout status
+      const { error: updateError } = await supabase.rpc("complete_workout", {
+        workout_id: workoutData.id,
+      });
+
+      if (updateError) {
+        console.error("Error updating workout status:", updateError);
+        throw new Error(
+          `Failed to update workout status: ${updateError.message}`
+        );
       }
 
       router.push("/workouts");
