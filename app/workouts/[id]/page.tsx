@@ -198,11 +198,6 @@ export default function WorkoutPage() {
           showBackButton
           onBackClick={handleBack}
           isFlushWithTop={true}
-          rightElement={
-            <div className="completion-badge workout-type">
-              {workoutData.type}
-            </div>
-          }
         />
 
         <div className="px-4 pt-6">
