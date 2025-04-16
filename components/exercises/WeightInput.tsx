@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useExerciseContext } from "./ExerciseCard";
 
 interface WeightInputProps {
   initialValue?: number;
@@ -22,8 +23,10 @@ export function WeightInput({
   className = "",
 }: WeightInputProps) {
   const [value, setValue] = useState(initialValue);
+  const { isCompleted } = useExerciseContext();
 
   const decrease = () => {
+    if (isCompleted) return;
     if (value - step >= min) {
       const newValue = value - step;
       setValue(newValue);
@@ -32,6 +35,7 @@ export function WeightInput({
   };
 
   const increase = () => {
+    if (isCompleted) return;
     if (value + step <= max) {
       const newValue = value + step;
       setValue(newValue);
@@ -40,12 +44,15 @@ export function WeightInput({
   };
 
   return (
-    <div className={`weight-input ${className}`}>
+    <div
+      className={`weight-input ${className} ${isCompleted ? "disabled" : ""}`}
+    >
       <button
         className="weight-button"
         onClick={decrease}
         aria-label={`Decrease weight by ${step}`}
         type="button"
+        disabled={isCompleted}
       >
         -
       </button>
@@ -56,6 +63,7 @@ export function WeightInput({
         onClick={increase}
         aria-label={`Increase weight by ${step}`}
         type="button"
+        disabled={isCompleted}
       >
         +
       </button>
@@ -73,6 +81,11 @@ export function WeightInput({
             0 1px 1px rgba(255, 255, 255, 0.05);
           border: 1px solid rgba(255, 255, 255, 0.1);
           position: relative;
+        }
+
+        .weight-input.disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
         }
 
         .weight-value {
@@ -114,13 +127,17 @@ export function WeightInput({
           line-height: 1;
         }
 
-        .weight-button:hover {
+        .weight-button:disabled {
+          cursor: not-allowed;
+        }
+
+        .weight-button:not(:disabled):hover {
           background: linear-gradient(145deg, #ff9967, #ff7440);
           transform: translateY(-1px);
           box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
         }
 
-        .weight-button:active {
+        .weight-button:not(:disabled):active {
           transform: translateY(1px);
           box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
         }

@@ -1,6 +1,12 @@
 "use client";
 
-import React, { ReactNode, useState, useEffect } from "react";
+import React, {
+  ReactNode,
+  useState,
+  useEffect,
+  createContext,
+  useContext,
+} from "react";
 import { createClient } from "@/lib/supabase";
 
 interface ExerciseCardProps {
@@ -13,6 +19,22 @@ interface ExerciseCardProps {
   reps: number;
   weight: number;
 }
+
+interface ExerciseContextType {
+  isCompleted: boolean;
+}
+
+const ExerciseContext = createContext<ExerciseContextType>({
+  isCompleted: false,
+});
+
+export const useExerciseContext = () => {
+  const context = useContext(ExerciseContext);
+  if (!context) {
+    throw new Error("useExerciseContext must be used within an ExerciseCard");
+  }
+  return context;
+};
 
 export function ExerciseCard({
   name,
@@ -120,76 +142,78 @@ export function ExerciseCard({
   );
 
   return (
-    <div className={`exercise-card ${className}`}>
-      <div className="exercise-header">
-        <div className="exercise-name">{name}</div>
-        <div className="exercise-icon">{icon}</div>
+    <ExerciseContext.Provider value={{ isCompleted }}>
+      <div className={`exercise-card ${className}`}>
+        <div className="exercise-header">
+          <div className="exercise-name">{name}</div>
+          <div className="exercise-icon">{icon}</div>
+        </div>
+        <div className="exercise-content">{children}</div>
+
+        <style jsx>{`
+          .exercise-card {
+            background: #0a2518;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+            color: white;
+            width: 100%;
+          }
+
+          .exercise-header {
+            padding: 1rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(
+              145deg,
+              rgba(32, 85, 64, 0.6),
+              rgba(26, 69, 52, 0.6)
+            );
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+          }
+
+          .exercise-name {
+            font-weight: 600;
+            font-size: 1.25rem;
+            letter-spacing: -0.01em;
+          }
+
+          .exercise-icon {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.9);
+          }
+
+          .exercise-content {
+            padding: 1.25rem;
+          }
+        `}</style>
+
+        <style jsx global>{`
+          .check-icon {
+            transition: all 0.2s ease;
+            transform: scale(1.1);
+          }
+
+          .check-icon:not(.completed):not(.saving):hover {
+            transform: scale(1.2);
+            color: rgba(255, 255, 255, 1);
+          }
+
+          .check-icon.completed {
+            color: #4ade80;
+          }
+
+          .check-icon.saving {
+            opacity: 0.5;
+          }
+        `}</style>
       </div>
-      <div className="exercise-content">{children}</div>
-
-      <style jsx>{`
-        .exercise-card {
-          background: #0a2518;
-          border-radius: 16px;
-          overflow: hidden;
-          border: 1px solid rgba(255, 255, 255, 0.05);
-          box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
-          color: white;
-          width: 100%;
-        }
-
-        .exercise-header {
-          padding: 1rem 1.25rem;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          background: linear-gradient(
-            145deg,
-            rgba(32, 85, 64, 0.6),
-            rgba(26, 69, 52, 0.6)
-          );
-          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .exercise-name {
-          font-weight: 600;
-          font-size: 1.25rem;
-          letter-spacing: -0.01em;
-        }
-
-        .exercise-icon {
-          font-size: 1.5rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: rgba(255, 255, 255, 0.9);
-        }
-
-        .exercise-content {
-          padding: 1.25rem;
-        }
-      `}</style>
-
-      <style jsx global>{`
-        .check-icon {
-          transition: all 0.2s ease;
-          transform: scale(1.1);
-        }
-
-        .check-icon:not(.completed):not(.saving):hover {
-          transform: scale(1.2);
-          color: rgba(255, 255, 255, 1);
-        }
-
-        .check-icon.completed {
-          color: #4ade80;
-        }
-
-        .check-icon.saving {
-          opacity: 0.5;
-        }
-      `}</style>
-    </div>
+    </ExerciseContext.Provider>
   );
 }
 
