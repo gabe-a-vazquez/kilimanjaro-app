@@ -2,29 +2,47 @@
 
 import React, { useState } from "react";
 import { Camp } from "@/services/campService";
+import { TrainingWeek } from "@/types/workout-types";
+import { calculateOverallWorkoutCompletion } from "@/utils/workout-helpers";
 
 interface ProgressBarProps {
   camps: Camp[];
-  currentElevation: string;
-  approachingCamp: string;
-  progressPercentage: number;
+  weeks: TrainingWeek[];
   backgroundImage?: string;
   className?: string;
 }
 
 export function ProgressBar({
   camps,
-  currentElevation,
-  approachingCamp,
-  progressPercentage,
+  weeks,
   backgroundImage = "/images/trail-background.webp",
   className = "",
 }: ProgressBarProps) {
   const [showInfo, setShowInfo] = useState(false);
+  const progressPercentage = calculateOverallWorkoutCompletion(weeks);
 
   const toggleInfo = () => {
     setShowInfo(!showInfo);
   };
+
+  // Calculate which camp we're approaching based on progress percentage
+  const getApproachingCamp = () => {
+    if (!camps || camps.length === 0) return null;
+
+    // Find the first camp that has a higher position percentage than our progress
+    for (let i = 0; i < camps.length; i++) {
+      const campPositionPercentage =
+        ((camps.length - 1 - i) / (camps.length - 1)) * 100;
+      if (progressPercentage < campPositionPercentage) {
+        return camps[i];
+      }
+    }
+
+    // If we've passed all camps, return the summit
+    return camps[camps.length - 1];
+  };
+
+  const approachingCamp = getApproachingCamp();
 
   return (
     <div
@@ -49,8 +67,8 @@ export function ProgressBar({
           onKeyPress={(e) => e.key === "Enter" && toggleInfo()}
           role="button"
           tabIndex={0}
-          aria-label="Show current elevation"
-          title="Click to show current elevation"
+          aria-label="Show progress"
+          title="Click to show progress"
           style={{ bottom: `${progressPercentage}%` }}
         ></div>
 
@@ -78,8 +96,12 @@ export function ProgressBar({
       {/* Progress information overlay - only shown when user position is clicked */}
       {showInfo && (
         <div className="progress-info">
-          <div className="elevation-info">{currentElevation}</div>
-          <div className="approaching-info">Approaching: {approachingCamp}</div>
+          <div className="elevation-info">{`${progressPercentage}% Complete`}</div>
+          {approachingCamp && (
+            <div className="approaching-info">
+              Approaching: {approachingCamp.name}
+            </div>
+          )}
         </div>
       )}
 

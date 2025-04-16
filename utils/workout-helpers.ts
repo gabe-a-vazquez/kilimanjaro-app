@@ -2,13 +2,7 @@
  * Workout helper utilities for the Kilimanjaro Training App
  */
 
-import {
-  WorkoutStatus,
-  Workout,
-  TrainingWeek,
-  UserProgress,
-  Camp,
-} from "../types/workout-types";
+import { Workout, TrainingWeek, Camp } from "../types/workout-types";
 
 /**
  * Calculate the percentage of workouts completed for a training week
@@ -163,4 +157,31 @@ export const updateWorkoutStatus = (workout: Workout): Workout => {
     ...workout,
     status,
   };
+};
+
+/**
+ * Calculate the overall percentage of workouts completed across all weeks
+ * @param weeks Array of training weeks
+ * @returns Percentage (0-100) of total workouts completed
+ */
+export const calculateOverallWorkoutCompletion = (
+  weeks: TrainingWeek[]
+): number => {
+  if (!weeks || weeks.length === 0) return 0;
+
+  let totalWorkouts = 0;
+  let completedWorkouts = 0;
+
+  weeks.forEach((week) => {
+    if (week.workouts && week.workouts.length > 0) {
+      totalWorkouts += week.workouts.length;
+      completedWorkouts += week.workouts.filter(
+        (workout) => workout.status === "completed"
+      ).length;
+    }
+  });
+
+  return totalWorkouts === 0
+    ? 0
+    : Math.round((completedWorkouts / totalWorkouts) * 100);
 };
