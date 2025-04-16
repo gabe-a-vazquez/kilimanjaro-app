@@ -32,6 +32,17 @@ export default function WorkoutsPage() {
   const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
 
+  const calculateTotalProgress = (data: WeekWithWorkouts[]): string => {
+    const allWorkouts = data.flatMap((week) => week.workouts);
+    const completedWorkouts = allWorkouts.filter(
+      (workout) => workout.status === "completed"
+    );
+    const progressPercentage = Math.round(
+      (completedWorkouts.length / allWorkouts.length) * 100
+    );
+    return `${progressPercentage}%`;
+  };
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -150,7 +161,11 @@ export default function WorkoutsPage() {
         <Header
           title="Training Schedule"
           onBackClick={handleBackClick}
-          rightElement={<div className="completion-badge">35%</div>}
+          rightElement={
+            <div className="completion-badge">
+              {calculateTotalProgress(weeklyData)}
+            </div>
+          }
           isFlushWithTop={true}
         />
 
