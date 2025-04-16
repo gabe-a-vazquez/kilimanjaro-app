@@ -143,7 +143,6 @@ export default function WorkoutPage() {
         .from("weight_tracking")
         .insert(
           Object.entries(weights).map(([exerciseId, weight]) => ({
-            user_id: null, // Will be set by RLS policy
             workout_id: workoutData?.id,
             exercise_id: parseInt(exerciseId),
             weight_lbs: weight,
@@ -156,10 +155,11 @@ export default function WorkoutPage() {
         );
 
       if (trackingError) {
+        console.error("Error saving weights:", trackingError);
         throw new Error(`Failed to save weights: ${trackingError.message}`);
       }
 
-      router.push("/dashboard");
+      router.push("/workouts");
     } catch (err) {
       console.error("Error completing workout:", err);
       setError(
@@ -214,12 +214,16 @@ export default function WorkoutPage() {
 
         <div className="space-y-6 px-4">
           {workoutData.exercises.map((exercise) => (
-            <ExerciseCard key={exercise.id} name={exercise.name}>
+            <ExerciseCard
+              key={exercise.id}
+              name={exercise.name}
+              exerciseId={exercise.id}
+              workoutId={workoutData.id}
+              reps={exercise.reps}
+              weight={weights[exercise.id] || 0}
+            >
               <div className="mt-4 space-y-4">
                 <div>
-                  <h3 className="text-sm font-medium text-gray-200 mb-2">
-                    Sets
-                  </h3>
                   <div className="space-y-2">
                     {Array.from({ length: exercise.sets }).map((_, index) => (
                       <SetRow
