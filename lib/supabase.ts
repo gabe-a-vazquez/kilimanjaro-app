@@ -7,7 +7,7 @@ export const createClient = () => {
 };
 
 // Helper function to handle Supabase errors
-export const handleSupabaseError = (error: any): string => {
+export const handleSupabaseError = (error: Error | unknown): string => {
   console.error("Supabase error:", error);
   if (error instanceof Error) {
     return error.message;

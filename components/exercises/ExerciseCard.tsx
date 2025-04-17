@@ -6,6 +6,7 @@ import React, {
   useEffect,
   createContext,
   useContext,
+  useCallback,
 } from "react";
 import { createClient } from "@/lib/supabase";
 
@@ -49,38 +50,24 @@ export function ExerciseCard({
   const [isCompleted, setIsCompleted] = useState(false);
   const supabase = createClient();
 
-  useEffect(() => {
-    async function checkCompletionStatus() {
-      if (!workoutId || !exerciseId) {
-        console.log("Missing required IDs:", { workoutId, exerciseId });
-        return;
-      }
+  const checkCompletionStatus = useCallback(async () => {
+    try {
+      const { count } = await supabase
+        .from("weight_tracking")
+        .select("*", { count: "exact" })
+        .eq("workout_id", workoutId)
+        .eq("exercise_id", exerciseId)
+        .single();
 
-      try {
-        const { count, error } = await supabase
-          .from("weight_tracking")
-          .select("*", { count: "exact", head: true })
-          .eq("workout_id", workoutId)
-          .eq("exercise_id", exerciseId);
-
-        if (error) {
-          console.error("Supabase error:", {
-            message: error.message,
-            details: error.details,
-            hint: error.hint,
-            code: error.code,
-          });
-          return;
-        }
-
-        setIsCompleted(count ? count > 0 : false);
-      } catch (err) {
-        console.error("Unexpected error checking completion status:", err);
-      }
+      setIsCompleted(count ? count > 0 : false);
+    } catch (err) {
+      console.error("Unexpected error checking completion status:", err);
     }
+  }, [supabase, workoutId, exerciseId]);
 
+  useEffect(() => {
     checkCompletionStatus();
-  }, [exerciseId, workoutId]);
+  }, [checkCompletionStatus]);
 
   const handleSave = async () => {
     try {

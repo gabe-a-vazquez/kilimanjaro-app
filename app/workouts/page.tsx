@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageCard } from "@/components/layout/PageCard";
@@ -48,9 +48,10 @@ export default function WorkoutsPage() {
     return `${progressPercentage}%`;
   };
 
-  async function fetchData() {
+  const fetchData = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
     try {
-      setError(null);
       console.log("Fetching data from Supabase...");
 
       // First, fetch all weeks
@@ -120,11 +121,11 @@ export default function WorkoutsPage() {
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [supabase]);
 
   useEffect(() => {
     fetchData();
-  }, [supabase]);
+  }, [fetchData]);
 
   // Add visibility change listener
   useEffect(() => {
@@ -139,7 +140,7 @@ export default function WorkoutsPage() {
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, []);
+  }, [fetchData]);
 
   const handleBackClick = () => {
     router.push("/");
