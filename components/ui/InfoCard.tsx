@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import Image from "next/image";
 
 interface InfoCardProps {
   title: string;
@@ -19,15 +20,21 @@ export function InfoCard({
   variant = "default",
   className = "",
 }: InfoCardProps) {
+  const [imgSrc, setImgSrc] = useState(imageSrc);
+  const fallbackImage = "/images/tanzania-wildlife.webp";
+
   return (
     <div className={`info-card ${variant} ${className}`}>
       {imageSrc && (
-        <div
-          className="info-card-image"
-          role="img"
-          aria-label={imageAlt}
-          style={{ backgroundImage: `url(${imageSrc})` }}
-        />
+        <div className="info-card-image-container">
+          <Image
+            src={imgSrc || fallbackImage}
+            alt={imageAlt}
+            className="info-card-image"
+            fill
+            onError={() => setImgSrc(fallbackImage)}
+          />
+        </div>
       )}
       <div className="info-card-content">
         <h3 className="info-card-title">{title}</h3>
@@ -44,6 +51,7 @@ export function InfoCard({
           backdrop-filter: blur(10px);
           -webkit-backdrop-filter: blur(10px);
           display: flex;
+          align-items: center;
           height: auto;
           border-radius: 12px;
           border: 1px solid rgba(255, 255, 255, 0.1);
@@ -63,28 +71,17 @@ export function InfoCard({
             inset 0 0 20px rgba(255, 127, 80, 0.1);
         }
 
-        .info-card-image {
+        .info-card-image-container {
           width: 100px;
           height: 100px;
-          border-radius: 8px;
-          background-size: cover;
-          background-position: center;
           position: relative;
-          overflow: hidden;
-          box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
-          flex-shrink: 0;
           margin-right: 1rem;
-        }
-
-        .info-card-image::after {
-          content: "";
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(
-            to right,
-            rgba(0, 0, 0, 0),
-            rgba(0, 0, 0, 0.3)
-          );
+          flex-shrink: 0;
+          border-radius: 8px;
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .info-card-content {
@@ -107,6 +104,13 @@ export function InfoCard({
           color: rgba(255, 255, 255, 0.9);
           line-height: 1.5;
           font-weight: 400;
+        }
+
+        :global(.info-card-image) {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 8px;
         }
       `}</style>
     </div>

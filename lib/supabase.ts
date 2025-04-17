@@ -1,7 +1,12 @@
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { Database } from "@/types/supabase";
 
+let supabaseInstance: ReturnType<typeof createSupabaseClient<Database>> | null =
+  null;
+
 export const createClient = () => {
+  if (supabaseInstance) return supabaseInstance;
+
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -9,7 +14,8 @@ export const createClient = () => {
     throw new Error("Missing Supabase environment variables");
   }
 
-  return createSupabaseClient<Database>(supabaseUrl, supabaseKey);
+  supabaseInstance = createSupabaseClient<Database>(supabaseUrl, supabaseKey);
+  return supabaseInstance;
 };
 
 // Helper function to handle Supabase errors

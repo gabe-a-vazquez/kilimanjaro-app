@@ -13,15 +13,16 @@ import { createClient } from "@/lib/supabase";
 import { TrainingWeek, Workout, WorkoutStatus } from "@/types/workout-types";
 import { FunFact, getFunFactForDate } from "@/services/funFactService";
 
+// Create a single Supabase client instance
+const supabase = createClient();
+
 export default function Home() {
-  // Sample data for the page
   const targetDate = new Date("June 26, 2025");
   const [camps, setCamps] = useState<Camp[]>([]);
   const [weeklyData, setWeeklyData] = useState<TrainingWeek[]>([]);
   const [funFact, setFunFact] = useState<FunFact | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const supabase = createClient();
 
   useEffect(() => {
     async function fetchData() {
@@ -98,7 +99,7 @@ export default function Home() {
     }
 
     fetchData();
-  }, [supabase]);
+  }, []);
 
   if (isLoading) {
     return (
