@@ -11,12 +11,14 @@ import { useEffect, useState } from "react";
 import { Camp, getCamps } from "@/services/campService";
 import { createClient } from "@/lib/supabase";
 import { TrainingWeek, Workout, WorkoutStatus } from "@/types/workout-types";
+import { FunFact, getFunFactForDate } from "@/services/funFactService";
 
 export default function Home() {
   // Sample data for the page
   const targetDate = new Date("June 26, 2025");
   const [camps, setCamps] = useState<Camp[]>([]);
   const [weeklyData, setWeeklyData] = useState<TrainingWeek[]>([]);
+  const [funFact, setFunFact] = useState<FunFact | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
@@ -27,6 +29,11 @@ export default function Home() {
         // Fetch camps
         const campsData = await getCamps();
         setCamps(campsData);
+
+        // Fetch today's fun fact
+        const today = new Date();
+        const factData = await getFunFactForDate(today);
+        setFunFact(factData);
 
         // Fetch weeks
         const { data: weeks, error: weeksError } = await supabase
@@ -127,14 +134,16 @@ export default function Home() {
         <ProgressBar camps={camps} weeks={weeklyData} />
 
         {/* Fun Fact */}
-        <InfoCard
-          title="Tanzania Fun Fact"
-          imageSrc="/images/tanzania-wildlife.webp"
-          className="mt-6 w-full"
-        >
-          Tanzania is home to over 4 million wild animals and 1,000 bird
-          species.
-        </InfoCard>
+        {funFact && (
+          <InfoCard
+            title={funFact.title}
+            imageSrc={funFact.image_url || "/images/tanzania-wildlife.webp"}
+            imageAlt={funFact.image_alt || "Tanzania fun fact image"}
+            className="mt-6 w-full"
+          >
+            {funFact.fact_text}
+          </InfoCard>
+        )}
 
         {/* Navigation Button */}
         <Link href="/workouts" className="workout-button-link mb-4">
