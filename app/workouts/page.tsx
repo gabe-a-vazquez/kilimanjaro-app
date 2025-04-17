@@ -32,6 +32,11 @@ export default function WorkoutsPage() {
   const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
 
+  const isCurrentWeek = (week: WeekWithWorkouts): boolean => {
+    const now = new Date();
+    return now >= week.startDate && now <= week.endDate;
+  };
+
   const calculateTotalProgress = (data: WeekWithWorkouts[]): string => {
     const allWorkouts = data.flatMap((week) => week.workouts);
     const completedWorkouts = allWorkouts.filter(
@@ -199,7 +204,7 @@ export default function WorkoutsPage() {
               title={week.title}
               subtitle={`${week.startDate.toDateString()} - ${week.endDate.toDateString()}`}
               indicator={week.progress}
-              defaultOpen={week.id === 1}
+              defaultOpen={isCurrentWeek(week)}
             >
               {week.workouts.map((workout) => (
                 <WorkoutRow
