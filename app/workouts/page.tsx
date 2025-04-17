@@ -43,75 +43,98 @@ export default function WorkoutsPage() {
     return `${progressPercentage}%`;
   };
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        setError(null);
-        console.log("Fetching data from Supabase...");
+  async function fetchData() {
+    try {
+      setError(null);
+      console.log("Fetching data from Supabase...");
 
-        // First, fetch all weeks
-        const { data: weeks, error: weeksError } = await supabase
-          .from("weeks")
-          .select("*")
-          .order("id");
+      // First, fetch all weeks
+      const { data: weeks, error: weeksError } = await supabase
+        .from("weeks")
+        .select("*")
+        .order("id");
 
-        if (weeksError) {
-          console.error("Weeks fetch error:", weeksError);
-          throw weeksError;
-        }
+      if (weeksError) {
+        console.error("Weeks fetch error:", weeksError);
+        throw weeksError;
+      }
 
-        if (!weeks || weeks.length === 0) {
-          console.error("No weeks data returned:", weeks);
-          throw new Error("No weeks found in the database");
-        }
+      if (!weeks || weeks.length === 0) {
+        console.error("No weeks data returned:", weeks);
+        throw new Error("No weeks found in the database");
+      }
 
-        // Then, fetch all workouts
-        const { data: workouts, error: workoutsError } = await supabase
-          .from("workouts")
-          .select("*")
-          .order("week_id, day_number");
+      // Then, fetch all workouts
+      const { data: workouts, error: workoutsError } = await supabase
+        .from("workouts")
+        .select("*")
+        .order("week_id, day_number");
 
-        if (workoutsError) {
-          throw workoutsError;
-        }
+      if (workoutsError) {
+        throw workoutsError;
+      }
 
-        if (!workouts) {
-          throw new Error("No workouts found in the database");
-        }
+      if (!workouts) {
+        throw new Error("No workouts found in the database");
+      }
 
-        console.log("Received weeks:", weeks);
-        console.log("Received workouts:", workouts);
+      console.log("Received weeks:", weeks);
+      console.log("Received workouts:", workouts);
 
-        // Combine the data
-        const formattedData: WeekWithWorkouts[] = weeks.map((week) => ({
+      // Combine the data
+      const formattedData: WeekWithWorkouts[] = weeks.map((week) => {
+        const weekWorkouts = workouts.filter(
+          (workout) => workout.week_id === week.id
+        );
+        const completedCount = weekWorkouts.filter(
+          (w) => w.status === "completed"
+        ).length;
+        const totalCount = weekWorkouts.length;
+
+        return {
           id: week.id,
           title: week.title,
           startDate: new Date(week.start_date),
           endDate: new Date(week.end_date),
           description: week.description,
-          progress: week.progress || "0/3 completed",
-          workouts: workouts
-            .filter((workout) => workout.week_id === week.id)
-            .map((workout) => ({
-              id: workout.id,
-              day: `Day ${workout.day_number}`,
-              type: workout.type,
-              summary: workout.summary,
-              status: workout.status as "upcoming" | "today" | "completed",
-            })),
-        }));
+          progress: `${completedCount}/${totalCount} completed`,
+          workouts: weekWorkouts.map((workout) => ({
+            id: workout.id,
+            day: `Day ${workout.day_number}`,
+            type: workout.type,
+            summary: workout.summary,
+            status: workout.status as "upcoming" | "today" | "completed",
+          })),
+        };
+      });
 
-        setWeeklyData(formattedData);
-      } catch (err) {
-        console.error("Error fetching data:", err);
-        setError(handleSupabaseError(err));
-      } finally {
-        setIsLoading(false);
+      setWeeklyData(formattedData);
+    } catch (err) {
+      console.error("Error fetching data:", err);
+      setError(handleSupabaseError(err));
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, [supabase]);
+
+  // Add visibility change listener
+  useEffect(() => {
+    function handleVisibilityChange() {
+      if (document.visibilityState === "visible") {
+        console.log("Page became visible, refreshing data...");
+        fetchData();
       }
     }
 
-    fetchData();
-  }, [supabase]);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
 
   const handleBackClick = () => {
     router.push("/");
