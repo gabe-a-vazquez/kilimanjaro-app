@@ -78,15 +78,50 @@ export function ExerciseCard({
   const handleSave = async () => {
     try {
       setIsSaving(true);
-      console.log("workoutId", workoutId);
-      console.log("exerciseId", exerciseId);
+
+      // First get the workout_exercise record to get its ID and number of sets
+      const { data: workoutExercise, error: fetchError } = await supabase
+        .from("workout_exercises")
+        .select("*")
+        .eq("workout_id", workoutId)
+        .eq("exercise_id", exerciseId)
+        .single();
+
+      if (fetchError) {
+        console.error("Error fetching workout exercise:", fetchError);
+        throw new Error(
+          `Failed to fetch workout exercise: ${fetchError.message}`
+        );
+      }
+
+      // Create exercise sets if they don't exist
+      const exerciseSets = Array.from({ length: workoutExercise.sets }).map(
+        (_, index) => ({
+          workout_exercise_id: workoutExercise.id,
+          set_number: index + 1,
+          weight: weight,
+          is_completed: true,
+        })
+      );
+
+      const { error: setsError } = await supabase
+        .from("exercise_sets")
+        .upsert(exerciseSets, {
+          onConflict: "workout_exercise_id,set_number",
+        });
+
+      if (setsError) {
+        console.error("Error creating exercise sets:", setsError);
+        throw new Error(`Failed to create exercise sets: ${setsError.message}`);
+      }
+
+      // Mark the exercise as completed
       type WorkoutExerciseUpdate =
         Database["public"]["Tables"]["workout_exercises"]["Update"];
       const { error: updateError } = await supabase
         .from("workout_exercises")
         .update<WorkoutExerciseUpdate>({
           status: "completed",
-          weight: weight,
         })
         .eq("workout_id", workoutId)
         .eq("exercise_id", exerciseId);

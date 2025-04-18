@@ -14,12 +14,18 @@ import { Database } from "@/lib/database.types";
 
 type WorkoutExercise = {
   id: number;
+  workout_exercise_id: number;
   name: string;
   sets: number;
   reps: number;
   restTime: number;
   tips: string[];
   videoUrl: string | null;
+  exercise_sets?: {
+    set_number: number;
+    weight: number;
+    is_completed: boolean;
+  }[];
 };
 
 type WorkoutData = {
@@ -66,7 +72,7 @@ export default function WorkoutPage() {
           throw new Error("Workout not found");
         }
 
-        // Fetch workout exercises with exercise details
+        // Fetch workout exercises with exercise details and sets
         const { data: exercises, error: exercisesError } = await supabase
           .from("workout_exercises")
           .select(
@@ -76,6 +82,11 @@ export default function WorkoutPage() {
               id,
               name,
               video_url
+            ),
+            exercise_sets (
+              set_number,
+              weight,
+              is_completed
             )
           `
           )
@@ -92,13 +103,25 @@ export default function WorkoutPage() {
         const formattedExercises: WorkoutExercise[] =
           exercises?.map((ex) => ({
             id: ex.exercise_id,
+            workout_exercise_id: ex.id,
             name: ex.exercises?.name || `Exercise ${ex.exercise_id}`,
             sets: ex.sets,
             reps: ex.reps,
             restTime: ex.rest_time,
             videoUrl: ex.exercises?.video_url,
             tips: [], // We'll need to add tips to the database if needed
+            exercise_sets: ex.exercise_sets,
           })) || [];
+
+        // Initialize weights state from exercise sets
+        const initialWeights: Record<string, number> = {};
+        formattedExercises.forEach((exercise) => {
+          if (exercise.exercise_sets && exercise.exercise_sets.length > 0) {
+            // Use the weight from the first set as the initial weight
+            initialWeights[exercise.id] = exercise.exercise_sets[0].weight;
+          }
+        });
+        setWeights(initialWeights);
 
         setWorkoutData({
           id: workout.id,
@@ -253,37 +276,46 @@ export default function WorkoutPage() {
               name={exercise.name}
               exerciseId={exercise.id}
               workoutId={workoutData.id}
-              reps={exercise.reps}
               weight={weights[exercise.id] || 0}
             >
               <div className="mt-4 space-y-4">
                 <div>
                   <div className="space-y-2">
-                    {Array.from({ length: exercise.sets }).map((_, index) => (
-                      <SetRow
-                        key={index}
-                        number={index + 1}
-                        details={[
-                          { label: "REPS", value: exercise.reps },
-                          {
-                            label: "REST",
-                            value:
-                              index < exercise.sets - 1
-                                ? `${exercise.restTime}s`
-                                : "0s",
-                          },
-                        ]}
-                        rightElement={
-                          <WeightInput
-                            initialValue={weights[exercise.id] || 0}
-                            onChange={(value) =>
-                              handleWeightChange(exercise.id.toString(), value)
-                            }
-                            unit="lbs"
-                          />
-                        }
-                      />
-                    ))}
+                    {Array.from({ length: exercise.sets }).map((_, index) => {
+                      const savedSet = exercise.exercise_sets?.find(
+                        (set) => set.set_number === index + 1
+                      );
+                      return (
+                        <SetRow
+                          key={index}
+                          number={index + 1}
+                          details={[
+                            { label: "REPS", value: exercise.reps },
+                            {
+                              label: "REST",
+                              value:
+                                index < exercise.sets - 1
+                                  ? `${exercise.restTime}s`
+                                  : "0s",
+                            },
+                          ]}
+                          rightElement={
+                            <WeightInput
+                              initialValue={
+                                savedSet?.weight ?? weights[exercise.id] ?? 0
+                              }
+                              onChange={(value) =>
+                                handleWeightChange(
+                                  exercise.id.toString(),
+                                  value
+                                )
+                              }
+                              unit="lbs"
+                            />
+                          }
+                        />
+                      );
+                    })}
                   </div>
                 </div>
 
