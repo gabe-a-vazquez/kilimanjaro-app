@@ -9,6 +9,7 @@ import React, {
   useCallback,
 } from "react";
 import { createClient } from "@/lib/supabase";
+import { Database } from "@/lib/database.types";
 
 interface ExerciseCardProps {
   name: string;
@@ -52,14 +53,21 @@ export function ExerciseCard({
 
   const checkCompletionStatus = useCallback(async () => {
     try {
-      const { count } = await supabase
-        .from("weight_tracking")
-        .select("*", { count: "exact" })
+      type WorkoutExercise =
+        Database["public"]["Tables"]["workout_exercises"]["Row"];
+      const { data, error } = await supabase
+        .from("workout_exercises")
+        .select<"*", WorkoutExercise>("*")
         .eq("workout_id", workoutId)
         .eq("exercise_id", exerciseId)
         .single();
 
-      setIsCompleted(count ? count > 0 : false);
+      if (error) {
+        console.error("Error checking exercise status:", error);
+        return;
+      }
+
+      setIsCompleted(data?.status === "completed");
     } catch (err) {
       console.error("Unexpected error checking completion status:", err);
     }
@@ -73,6 +81,22 @@ export function ExerciseCard({
     try {
       setIsSaving(true);
 
+      type WorkoutExerciseUpdate =
+        Database["public"]["Tables"]["workout_exercises"]["Update"];
+      const { error: statusError } = await supabase
+        .from("workout_exercises")
+        .update<WorkoutExerciseUpdate>({ status: "completed" })
+        .eq("workout_id", workoutId)
+        .eq("exercise_id", exerciseId);
+
+      if (statusError) {
+        console.error("Error updating exercise status:", statusError);
+        throw new Error(
+          `Failed to update exercise status: ${statusError.message}`
+        );
+      }
+
+      // Track the weight
       const { error: trackingError } = await supabase
         .from("weight_tracking")
         .insert({

@@ -253,6 +253,7 @@ export type Database = {
           rest_time: number;
           sequence_number: number;
           sets: number;
+          status: string;
           updated_at: string | null;
           workout_id: number;
         };
@@ -263,6 +264,7 @@ export type Database = {
           rest_time: number;
           sequence_number: number;
           sets: number;
+          status?: string;
           updated_at?: string | null;
           workout_id: number;
         };
@@ -273,6 +275,7 @@ export type Database = {
           rest_time?: number;
           sequence_number?: number;
           sets?: number;
+          status?: string;
           updated_at?: string | null;
           workout_id?: number;
         };

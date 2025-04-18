@@ -10,6 +10,7 @@ import SetRow from "@/components/exercises/SetRow";
 import WeightInput from "@/components/exercises/WeightInput";
 import TipsList from "@/components/exercises/TipsList";
 import Button from "@/components/ui/Button";
+import { Database } from "@/lib/database.types";
 
 type WorkoutExercise = {
   id: number;
@@ -142,6 +143,31 @@ export default function WorkoutPage() {
     try {
       if (!workoutData?.id) {
         throw new Error("Workout ID is missing");
+      }
+
+      // Check if all exercises are completed
+      type WorkoutExercise =
+        Database["public"]["Tables"]["workout_exercises"]["Row"];
+      const { data: exercises, error: exercisesError } = await supabase
+        .from("workout_exercises")
+        .select<"*", WorkoutExercise>("*")
+        .eq("workout_id", workoutData.id);
+
+      if (exercisesError) {
+        console.error("Error checking exercises status:", exercisesError);
+        throw new Error(
+          `Failed to check exercises status: ${exercisesError.message}`
+        );
+      }
+
+      const allExercisesCompleted = exercises?.every(
+        (ex) => ex.status === "completed"
+      );
+      if (!allExercisesCompleted) {
+        setError(
+          "Please complete all exercises before marking the workout as complete"
+        );
+        return;
       }
 
       // Save the workout completion with weights
