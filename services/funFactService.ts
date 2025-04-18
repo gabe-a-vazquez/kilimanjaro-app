@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase";
-import { Database } from "@/types/supabase";
+import { Database } from "@/lib/database.types";
 
 export type FunFact = Database["public"]["Tables"]["fun_facts"]["Row"];
 
