@@ -199,29 +199,6 @@ export default function WorkoutPage() {
         return;
       }
 
-      // Save the workout completion with weights
-      const { error: trackingError } = await supabase
-        .from("weight_tracking")
-        .insert(
-          Object.entries(weights).flatMap(([exerciseId, setWeights]) =>
-            Object.entries(setWeights).map(([setNumber, weight]) => ({
-              workout_id: workoutData.id,
-              exercise_id: parseInt(exerciseId),
-              weight_lbs: weight,
-              reps_completed:
-                workoutData.exercises.find((e) => e.id === parseInt(exerciseId))
-                  ?.reps || 0,
-              set_number: parseInt(setNumber),
-              date_recorded: new Date().toISOString().split("T")[0],
-            }))
-          )
-        );
-
-      if (trackingError) {
-        console.error("Error saving weights:", trackingError);
-        throw new Error(`Failed to save weights: ${trackingError.message}`);
-      }
-
       // Direct SQL update for the workout status
       const { error: updateError } = await supabase.rpc("complete_workout", {
         workout_id: workoutData.id,

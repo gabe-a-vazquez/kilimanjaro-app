@@ -99,7 +99,7 @@ export function ExerciseCard({
         (_, index) => ({
           workout_exercise_id: workoutExercise.id,
           set_number: index + 1,
-          weight: weight[index + 1],
+          weight: weight[index + 1] || 0,
           is_completed: true,
         })
       );
