@@ -244,12 +244,12 @@ export default function WorkoutPage() {
           isFlushWithTop={true}
         />
 
-        <div className="px-4 pt-6">
+        {/* <div className="px-4 pt-6">
           <div className="benefit-card">
             <div className="benefit-icon">🏔️</div>
             <div className="benefit-text">{workoutData.benefit}</div>
           </div>
-        </div>
+        </div> */}
 
         <div className="space-y-6 px-4">
           {workoutData.exercises.map((exercise) => (
