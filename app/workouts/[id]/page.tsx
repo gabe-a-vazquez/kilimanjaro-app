@@ -42,7 +42,9 @@ type WorkoutData = {
 export default function WorkoutPage() {
   const params = useParams();
   const router = useRouter();
-  const [weights, setWeights] = useState<Record<string, number>>({});
+  const [weights, setWeights] = useState<
+    Record<string, Record<number, number>>
+  >({});
   const [workoutData, setWorkoutData] = useState<WorkoutData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -113,12 +115,14 @@ export default function WorkoutPage() {
             exercise_sets: ex.exercise_sets,
           })) || [];
 
-        // Initialize weights state from exercise sets
-        const initialWeights: Record<string, number> = {};
+        // Initialize weights state from exercise sets - now per set
+        const initialWeights: Record<string, Record<number, number>> = {};
         formattedExercises.forEach((exercise) => {
-          if (exercise.exercise_sets && exercise.exercise_sets.length > 0) {
-            // Use the weight from the first set as the initial weight
-            initialWeights[exercise.id] = exercise.exercise_sets[0].weight;
+          initialWeights[exercise.id] = {};
+          if (exercise.exercise_sets) {
+            exercise.exercise_sets.forEach((set) => {
+              initialWeights[exercise.id][set.set_number] = set.weight;
+            });
           }
         });
         setWeights(initialWeights);
@@ -146,10 +150,17 @@ export default function WorkoutPage() {
     fetchWorkoutData();
   }, [supabase, workoutId]);
 
-  const handleWeightChange = (exerciseId: string, value: number) => {
+  const handleWeightChange = (
+    exerciseId: string,
+    setNumber: number,
+    value: number
+  ) => {
     setWeights((prev) => ({
       ...prev,
-      [exerciseId]: value,
+      [exerciseId]: {
+        ...(prev[exerciseId] || {}),
+        [setNumber]: value,
+      },
     }));
   };
 
@@ -192,16 +203,18 @@ export default function WorkoutPage() {
       const { error: trackingError } = await supabase
         .from("weight_tracking")
         .insert(
-          Object.entries(weights).map(([exerciseId, weight]) => ({
-            workout_id: workoutData.id,
-            exercise_id: parseInt(exerciseId),
-            weight_lbs: weight,
-            reps_completed:
-              workoutData.exercises.find((e) => e.id === parseInt(exerciseId))
-                ?.reps || 0,
-            set_number: 1,
-            date_recorded: new Date().toISOString().split("T")[0],
-          }))
+          Object.entries(weights).flatMap(([exerciseId, setWeights]) =>
+            Object.entries(setWeights).map(([setNumber, weight]) => ({
+              workout_id: workoutData.id,
+              exercise_id: parseInt(exerciseId),
+              weight_lbs: weight,
+              reps_completed:
+                workoutData.exercises.find((e) => e.id === parseInt(exerciseId))
+                  ?.reps || 0,
+              set_number: parseInt(setNumber),
+              date_recorded: new Date().toISOString().split("T")[0],
+            }))
+          )
         );
 
       if (trackingError) {
@@ -276,19 +289,20 @@ export default function WorkoutPage() {
               name={exercise.name}
               exerciseId={exercise.id}
               workoutId={workoutData.id}
-              weight={weights[exercise.id] || 0}
+              weight={weights[exercise.id] || {}}
             >
               <div className="mt-4 space-y-4">
                 <div>
                   <div className="space-y-2">
                     {Array.from({ length: exercise.sets }).map((_, index) => {
+                      const setNumber = index + 1;
                       const savedSet = exercise.exercise_sets?.find(
-                        (set) => set.set_number === index + 1
+                        (set) => set.set_number === setNumber
                       );
                       return (
                         <SetRow
                           key={index}
-                          number={index + 1}
+                          number={setNumber}
                           details={[
                             { label: "REPS", value: exercise.reps },
                             {
@@ -302,11 +316,14 @@ export default function WorkoutPage() {
                           rightElement={
                             <WeightInput
                               initialValue={
-                                savedSet?.weight ?? weights[exercise.id] ?? 0
+                                savedSet?.weight ??
+                                weights[exercise.id]?.[setNumber] ??
+                                0
                               }
                               onChange={(value) =>
                                 handleWeightChange(
                                   exercise.id.toString(),
+                                  setNumber,
                                   value
                                 )
                               }

@@ -18,7 +18,7 @@ interface ExerciseCardProps {
   className?: string;
   exerciseId: number;
   workoutId: number;
-  weight: number;
+  weight: Record<number, number>;
 }
 
 interface ExerciseContextType {
@@ -99,7 +99,7 @@ export function ExerciseCard({
         (_, index) => ({
           workout_exercise_id: workoutExercise.id,
           set_number: index + 1,
-          weight: weight,
+          weight: weight[index + 1],
           is_completed: true,
         })
       );
