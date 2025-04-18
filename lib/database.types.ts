@@ -256,6 +256,7 @@ export type Database = {
           status: string;
           updated_at: string | null;
           workout_id: number;
+          weight: number;
         };
         Insert: {
           created_at?: string | null;
@@ -267,6 +268,7 @@ export type Database = {
           status?: string;
           updated_at?: string | null;
           workout_id: number;
+          weight?: number;
         };
         Update: {
           created_at?: string | null;
@@ -278,6 +280,7 @@ export type Database = {
           status?: string;
           updated_at?: string | null;
           workout_id?: number;
+          weight?: number;
         };
         Relationships: [
           {

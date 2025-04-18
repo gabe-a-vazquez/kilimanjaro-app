@@ -18,7 +18,6 @@ interface ExerciseCardProps {
   className?: string;
   exerciseId: number;
   workoutId: number;
-  reps: number;
   weight: number;
 }
 
@@ -44,7 +43,6 @@ export function ExerciseCard({
   className = "",
   exerciseId,
   workoutId,
-  reps,
   weight,
 }: ExerciseCardProps) {
   const [isSaving, setIsSaving] = useState(false);
@@ -80,37 +78,22 @@ export function ExerciseCard({
   const handleSave = async () => {
     try {
       setIsSaving(true);
-
+      console.log("workoutId", workoutId);
+      console.log("exerciseId", exerciseId);
       type WorkoutExerciseUpdate =
         Database["public"]["Tables"]["workout_exercises"]["Update"];
-      const { error: statusError } = await supabase
+      const { error: updateError } = await supabase
         .from("workout_exercises")
-        .update<WorkoutExerciseUpdate>({ status: "completed" })
+        .update<WorkoutExerciseUpdate>({
+          status: "completed",
+          weight: weight,
+        })
         .eq("workout_id", workoutId)
         .eq("exercise_id", exerciseId);
 
-      if (statusError) {
-        console.error("Error updating exercise status:", statusError);
-        throw new Error(
-          `Failed to update exercise status: ${statusError.message}`
-        );
-      }
-
-      // Track the weight
-      const { error: trackingError } = await supabase
-        .from("weight_tracking")
-        .insert({
-          workout_id: workoutId,
-          exercise_id: exerciseId,
-          weight_lbs: weight,
-          reps_completed: reps,
-          set_number: 1,
-          date_recorded: new Date().toISOString().split("T")[0],
-        });
-
-      if (trackingError) {
-        console.error("Error saving exercise:", trackingError);
-        throw new Error(`Failed to save exercise: ${trackingError.message}`);
+      if (updateError) {
+        console.error("Error updating exercise:", updateError);
+        throw new Error(`Failed to update exercise: ${updateError.message}`);
       }
 
       setIsCompleted(true);
