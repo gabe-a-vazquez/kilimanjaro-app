@@ -50,7 +50,6 @@ export default function WorkoutPage() {
       try {
         setIsLoading(true);
         setError(null);
-        console.log("Fetching workout:", workoutId);
 
         // Fetch workout details
         const { data: workout, error: workoutError } = await supabase
@@ -67,8 +66,6 @@ export default function WorkoutPage() {
           throw new Error("Workout not found");
         }
 
-        console.log("Found workout:", workout);
-
         // Fetch workout exercises with exercise details
         const { data: exercises, error: exercisesError } = await supabase
           .from("workout_exercises")
@@ -84,8 +81,6 @@ export default function WorkoutPage() {
           )
           .eq("workout_id", workout.id)
           .order("sequence_number");
-
-        console.log("Exercises query result:", exercises);
 
         if (exercisesError) {
           throw new Error(
