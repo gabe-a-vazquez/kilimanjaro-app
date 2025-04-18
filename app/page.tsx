@@ -138,9 +138,8 @@ export default function Home() {
         {funFact && (
           <InfoCard
             title={funFact.title}
-            imageSrc={funFact.image_url || "/images/tanzania-wildlife.webp"}
-            imageAlt={funFact.image_alt || "Tanzania fun fact image"}
             className="mt-6 w-full"
+            link={funFact.link || undefined}
           >
             {funFact.fact_text}
           </InfoCard>

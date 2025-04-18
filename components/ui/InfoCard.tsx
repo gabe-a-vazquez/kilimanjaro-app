@@ -1,44 +1,37 @@
 "use client";
 
-import React, { useState } from "react";
-import Image from "next/image";
+import React from "react";
 
 interface InfoCardProps {
   title: string;
   children: React.ReactNode;
-  imageSrc?: string;
-  imageAlt?: string;
   variant?: "default" | "highlight";
   className?: string;
+  link?: string;
 }
 
 export function InfoCard({
   title,
   children,
-  imageSrc,
-  imageAlt = "Information image",
   variant = "default",
   className = "",
+  link,
 }: InfoCardProps) {
-  const [imgSrc, setImgSrc] = useState(imageSrc);
-  const fallbackImage = "/images/tanzania-wildlife.webp";
-
   return (
     <div className={`info-card ${variant} ${className}`}>
-      {imageSrc && (
-        <div className="info-card-image-container">
-          <Image
-            src={imgSrc || fallbackImage}
-            alt={imageAlt}
-            className="info-card-image"
-            fill
-            onError={() => setImgSrc(fallbackImage)}
-          />
-        </div>
-      )}
       <div className="info-card-content">
         <h3 className="info-card-title">{title}</h3>
         <div className="info-card-text">{children}</div>
+        {link && (
+          <a
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="info-card-link"
+          >
+            Learn More →
+          </a>
+        )}
       </div>
       <style jsx>{`
         .info-card {
@@ -71,19 +64,6 @@ export function InfoCard({
             inset 0 0 20px rgba(255, 127, 80, 0.1);
         }
 
-        .info-card-image-container {
-          width: 100px;
-          height: 100px;
-          position: relative;
-          margin-right: 1rem;
-          flex-shrink: 0;
-          border-radius: 8px;
-          overflow: hidden;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
         .info-card-content {
           flex: 1;
           display: flex;
@@ -106,11 +86,20 @@ export function InfoCard({
           font-weight: 400;
         }
 
-        :global(.info-card-image) {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          border-radius: 8px;
+        .info-card-link {
+          font-size: 0.875rem;
+          color: rgba(255, 127, 80, 0.9);
+          text-decoration: none;
+          margin-top: 0.75rem;
+          display: inline-block;
+          transition: all 0.2s ease;
+          opacity: 0.8;
+        }
+
+        .info-card-link:hover {
+          opacity: 1;
+          color: rgba(255, 127, 80, 1);
+          transform: translateX(2px);
         }
       `}</style>
     </div>
@@ -118,3 +107,4 @@ export function InfoCard({
 }
 
 export default InfoCard;
+//https://upload.wikimedia.org/wikipedia/commons/3/3f/Kilimanjaro_from_Amboseli.jpg

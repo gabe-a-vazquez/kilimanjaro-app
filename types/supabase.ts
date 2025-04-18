@@ -86,8 +86,10 @@ export interface Database {
           id: number;
           image_alt: string | null;
           image_url: string | null;
+          link: string | null;
           title: string;
           updated_at: string | null;
+          display_date: string | null;
         };
         Insert: {
           category?: string | null;
@@ -96,8 +98,10 @@ export interface Database {
           id?: number;
           image_alt?: string | null;
           image_url?: string | null;
+          link?: string | null;
           title: string;
           updated_at?: string | null;
+          display_date?: string | null;
         };
         Update: {
           category?: string | null;
@@ -106,8 +110,10 @@ export interface Database {
           id?: number;
           image_alt?: string | null;
           image_url?: string | null;
+          link?: string | null;
           title?: string;
           updated_at?: string | null;
+          display_date?: string | null;
         };
         Relationships: [];
       };
