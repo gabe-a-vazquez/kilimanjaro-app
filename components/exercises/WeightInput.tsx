@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, ChangeEvent } from "react";
 import { useExerciseContext } from "./ExerciseCard";
 
 interface WeightInputProps {
@@ -25,48 +25,29 @@ export function WeightInput({
   const [value, setValue] = useState(initialValue);
   const { isCompleted } = useExerciseContext();
 
-  const decrease = () => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (isCompleted) return;
-    if (value - step >= min) {
-      const newValue = value - step;
-      setValue(newValue);
-      onChange?.(newValue);
-    }
-  };
 
-  const increase = () => {
-    if (isCompleted) return;
-    if (value + step <= max) {
-      const newValue = value + step;
-      setValue(newValue);
-      onChange?.(newValue);
-    }
+    const newValue = Math.min(Math.max(Number(e.target.value), min), max);
+    setValue(newValue);
+    onChange?.(newValue);
   };
 
   return (
     <div
       className={`weight-input ${className} ${isCompleted ? "disabled" : ""}`}
     >
-      <button
-        className="weight-button"
-        onClick={decrease}
-        aria-label={`Decrease weight by ${step}`}
-        type="button"
+      <input
+        type="number"
+        value={value}
+        onChange={handleChange}
+        min={min}
+        max={max}
+        step={step}
         disabled={isCompleted}
-      >
-        -
-      </button>
-      <div className="weight-value">{value}</div>
+        className="weight-value-input"
+      />
       <div className="weight-unit">{unit}</div>
-      <button
-        className="weight-button"
-        onClick={increase}
-        aria-label={`Increase weight by ${step}`}
-        type="button"
-        disabled={isCompleted}
-      >
-        +
-      </button>
 
       <style jsx>{`
         .weight-input {
@@ -88,58 +69,37 @@ export function WeightInput({
           cursor: not-allowed;
         }
 
-        .weight-value {
-          margin: 0 0.4rem;
+        .weight-value-input {
+          width: 45px;
+          background: transparent;
+          border: none;
+          color: white;
           font-weight: 600;
-          min-width: 24px;
           text-align: center;
           font-feature-settings: "tnum";
           font-variant-numeric: tabular-nums;
-          color: white;
+          padding: 0;
+          -moz-appearance: textfield;
+        }
+
+        .weight-value-input::-webkit-outer-spin-button,
+        .weight-value-input::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+
+        .weight-value-input:disabled {
+          cursor: not-allowed;
+        }
+
+        .weight-value-input:focus {
+          outline: none;
         }
 
         .weight-unit {
           font-size: 0.75rem;
           color: rgba(255, 255, 255, 0.7);
-          margin-right: 0.1rem;
-        }
-
-        .weight-button {
-          width: 22px;
-          height: 22px;
-          border-radius: 50%;
-          background: linear-gradient(
-            145deg,
-            rgba(26, 69, 52, 0.8),
-            rgba(12, 44, 29, 0.8)
-          );
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          cursor: pointer;
-          font-size: 0.9rem;
-          user-select: none;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-          transition: all 150ms ease;
-          color: rgba(255, 255, 255, 0.9);
-          border: none;
-          padding: 0;
-          line-height: 1;
-        }
-
-        .weight-button:disabled {
-          cursor: not-allowed;
-        }
-
-        .weight-button:not(:disabled):hover {
-          background: linear-gradient(145deg, #ff9967, #ff7440);
-          transform: translateY(-1px);
-          box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
-        }
-
-        .weight-button:not(:disabled):active {
-          transform: translateY(1px);
-          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+          margin-left: 0.4rem;
         }
       `}</style>
     </div>
