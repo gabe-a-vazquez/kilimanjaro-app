@@ -15,7 +15,6 @@ interface WeightInputProps {
 
 export function WeightInput({
   initialValue = 0,
-  step = 5,
   unit = "lbs",
   min = 0,
   max = 1000,
@@ -23,6 +22,7 @@ export function WeightInput({
   className = "",
 }: WeightInputProps) {
   const [value, setValue] = useState(initialValue);
+  const [isFocused, setIsFocused] = useState(false);
   const { isCompleted } = useExerciseContext();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -33,17 +33,28 @@ export function WeightInput({
     onChange?.(newValue);
   };
 
+  const handleFocus = () => {
+    setIsFocused(true);
+  };
+
+  const handleBlur = () => {
+    setIsFocused(false);
+  };
+
+  const displayValue = isFocused && value === 0 ? "" : value;
+
   return (
     <div
       className={`weight-input ${className} ${isCompleted ? "disabled" : ""}`}
     >
       <input
         type="number"
-        value={value}
+        value={displayValue}
         onChange={handleChange}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
         min={min}
         max={max}
-        step={step}
         disabled={isCompleted}
         className="weight-value-input"
       />
