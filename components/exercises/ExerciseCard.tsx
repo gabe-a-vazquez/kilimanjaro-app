@@ -44,7 +44,6 @@ interface ExerciseHistory {
   sets: {
     weight: number;
     set_number: number;
-    is_completed: boolean;
   }[];
 }
 
@@ -156,7 +155,6 @@ export function ExerciseCard({
             .map((set) => ({
               weight: set.weight || 0,
               set_number: set.set_number || 1,
-              is_completed: set.is_completed || false,
             })) || [];
 
         return {
@@ -338,7 +336,6 @@ export function ExerciseCard({
                           <th>Date</th>
                           <th>Set</th>
                           <th>Weight</th>
-                          <th>Status</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -357,7 +354,6 @@ export function ExerciseCard({
                               )}
                               <td>{set.set_number}</td>
                               <td>{set.weight} lbs</td>
-                              <td>{set.is_completed ? "✓" : "–"}</td>
                             </tr>
                           ))
                         )}
