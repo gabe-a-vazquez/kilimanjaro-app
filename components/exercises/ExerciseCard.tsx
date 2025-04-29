@@ -166,7 +166,15 @@ export function ExerciseCard({
 
       console.log("Exercise history:", history);
 
-      setExerciseHistory(history);
+      // Sort history from most recent to oldest
+      const sortedHistory = history.sort((a, b) => {
+        if (!a.updated_at || !b.updated_at) return 0;
+        return (
+          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+        );
+      });
+
+      setExerciseHistory(sortedHistory);
     } catch (err) {
       console.error("Unexpected error fetching exercise history:", err);
     } finally {
