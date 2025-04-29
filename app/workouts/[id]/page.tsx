@@ -305,6 +305,7 @@ export default function WorkoutPage() {
                                 )
                               }
                               unit="lbs"
+                              exerciseId={exercise.id}
                             />
                           }
                         />

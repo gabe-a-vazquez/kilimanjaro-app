@@ -1,0 +1,11 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+
+Rule Name: supabase_project_info
+Description: The Supabase project for this application is named 'killimanjaro-app-3'. This information should be used when making Supabase-related queries or operations.
+
+Rule Name: check_db_schema
+Description: Before making any database-related edits or changes, the current database schema should be checked using `list_tables` and examining the table structures to ensure changes are compatible with the existing schema.

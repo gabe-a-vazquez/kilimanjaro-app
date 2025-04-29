@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, ChangeEvent } from "react";
+import React, { useState, ChangeEvent, useEffect } from "react";
 import { useExerciseContext } from "./ExerciseCard";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 interface WeightInputProps {
   initialValue?: number;
@@ -11,6 +12,7 @@ interface WeightInputProps {
   max?: number;
   onChange?: (value: number) => void;
   className?: string;
+  exerciseId?: number;
 }
 
 export function WeightInput({
@@ -20,10 +22,85 @@ export function WeightInput({
   max = 1000,
   onChange,
   className = "",
+  exerciseId,
 }: WeightInputProps) {
   const [value, setValue] = useState(initialValue);
   const [isFocused, setIsFocused] = useState(false);
   const { isCompleted } = useExerciseContext();
+  const supabase = createClientComponentClient();
+  const [hasFetched, setHasFetched] = useState(false);
+
+  useEffect(() => {
+    const fetchHeaviestWeight = async () => {
+      const exerciseIdNumber =
+        typeof exerciseId === "string" ? parseInt(exerciseId) : exerciseId;
+
+      // Skip if no exerciseId, already completed, already has a value, or already fetched
+      if (!exerciseIdNumber || isCompleted || initialValue > 0 || hasFetched) {
+        console.log(
+          "Skipping fetch - exerciseId:",
+          exerciseIdNumber,
+          "isCompleted:",
+          isCompleted,
+          "initialValue:",
+          initialValue,
+          "hasFetched:",
+          hasFetched
+        );
+        return;
+      }
+
+      try {
+        // First get all workout_exercise_ids for this exercise
+        console.log(
+          "Fetching workout exercises for exerciseId:",
+          exerciseIdNumber
+        );
+        const { data: workoutExercises, error: workoutError } = await supabase
+          .from("workout_exercises")
+          .select("id")
+          .eq("exercise_id", exerciseIdNumber);
+
+        if (workoutError) {
+          console.error("Error fetching workout exercises:", workoutError);
+          return;
+        }
+
+        console.log("Found workout exercises:", workoutExercises);
+        const workoutExerciseIds = workoutExercises.map((we) => we.id);
+
+        // Then get the heaviest weight from completed sets for these workout exercises
+        console.log(
+          "Fetching heaviest weight for workout exercise IDs:",
+          workoutExerciseIds
+        );
+        const { data, error } = await supabase
+          .from("exercise_sets")
+          .select("weight")
+          .eq("is_completed", true)
+          .in("workout_exercise_id", workoutExerciseIds)
+          .order("weight", { ascending: false })
+          .limit(1);
+
+        console.log("Heaviest weight data:", data);
+        if (error) {
+          console.error("Error fetching heaviest weight:", error);
+          return;
+        }
+
+        if (data && data.length > 0 && data[0].weight > 0) {
+          setValue(data[0].weight);
+          onChange?.(data[0].weight);
+        }
+
+        setHasFetched(true);
+      } catch (error) {
+        console.error("Error fetching heaviest weight:", error);
+      }
+    };
+
+    fetchHeaviestWeight();
+  }, [exerciseId, isCompleted, initialValue, hasFetched]); // Removed onChange from dependencies
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (isCompleted) return;
