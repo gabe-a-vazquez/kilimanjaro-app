@@ -47,6 +47,7 @@ export function ExerciseCard({
 }: ExerciseCardProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const supabase = createClient();
 
   const checkCompletionStatus = useCallback(async () => {
@@ -174,10 +175,55 @@ export function ExerciseCard({
     <ExerciseContext.Provider value={{ isCompleted }}>
       <div className={`exercise-card ${className}`}>
         <div className="exercise-header">
-          <div className="exercise-name">{name}</div>
+          <div className="exercise-name-container">
+            <div className="exercise-name">{name}</div>
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="chart-icon"
+              onClick={() => setIsModalOpen(true)}
+            >
+              <path
+                d="M3 3v18h18"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M7 14l4-4 4 4 5-5"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
           <div className="exercise-icon">{icon}</div>
         </div>
         <div className="exercise-content">{children}</div>
+
+        {isModalOpen && (
+          <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <h2>{name} Progress</h2>
+                <button
+                  className="close-button"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  ×
+                </button>
+              </div>
+              <div className="modal-body">
+                <p>Progress chart will be implemented here</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         <style jsx>{`
           .exercise-card {
@@ -203,6 +249,12 @@ export function ExerciseCard({
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
           }
 
+          .exercise-name-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+          }
+
           .exercise-name {
             font-weight: 600;
             font-size: 1.25rem;
@@ -219,6 +271,78 @@ export function ExerciseCard({
 
           .exercise-content {
             padding: 1.25rem;
+          }
+
+          .chart-icon {
+            color: rgba(255, 255, 255, 0.6);
+            transition: all 0.2s ease;
+            cursor: pointer;
+          }
+
+          .chart-icon:hover {
+            color: rgba(255, 255, 255, 0.9);
+            transform: scale(1.1);
+          }
+
+          .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+          }
+
+          .modal-content {
+            background: #0a2518;
+            border-radius: 16px;
+            padding: 1.5rem;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+          }
+
+          .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          }
+
+          .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: white;
+          }
+
+          .close-button {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            line-height: 1;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+          }
+
+          .close-button:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+          }
+
+          .modal-body {
+            color: rgba(255, 255, 255, 0.9);
           }
         `}</style>
 
