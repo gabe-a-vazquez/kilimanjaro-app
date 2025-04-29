@@ -10,6 +10,7 @@ import SetRow from "@/components/exercises/SetRow";
 import WeightInput from "@/components/exercises/WeightInput";
 import TipsList from "@/components/exercises/TipsList";
 import Button from "@/components/ui/Button";
+import confetti from "canvas-confetti";
 import { Database } from "@/lib/database.types";
 
 type WorkoutExercise = {
@@ -169,11 +170,16 @@ export default function WorkoutPage() {
   };
 
   const handleComplete = async () => {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+    });
+
     try {
       if (!workoutData?.id) {
         throw new Error("Workout ID is missing");
       }
-
       // Check if all exercises are completed
       type WorkoutExercise =
         Database["public"]["Tables"]["workout_exercises"]["Row"];
@@ -181,14 +187,12 @@ export default function WorkoutPage() {
         .from("workout_exercises")
         .select<"*", WorkoutExercise>("*")
         .eq("workout_id", workoutData.id);
-
       if (exercisesError) {
         console.error("Error checking exercises status:", exercisesError);
         throw new Error(
           `Failed to check exercises status: ${exercisesError.message}`
         );
       }
-
       const allExercisesCompleted = exercises?.every(
         (ex) => ex.status === "completed"
       );
@@ -198,19 +202,16 @@ export default function WorkoutPage() {
         );
         return;
       }
-
       // Direct SQL update for the workout status
       const { error: updateError } = await supabase.rpc("complete_workout", {
         workout_id: workoutData.id,
       });
-
       if (updateError) {
         console.error("Error updating workout status:", updateError);
         throw new Error(
           `Failed to update workout status: ${updateError.message}`
         );
       }
-
       router.push("/workouts");
     } catch (err) {
       console.error("Error completing workout:", err);
