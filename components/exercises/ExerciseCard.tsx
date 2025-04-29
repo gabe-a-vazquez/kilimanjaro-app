@@ -40,7 +40,7 @@ export const useExerciseContext = () => {
 };
 
 interface ExerciseHistory {
-  completed_at: string | null;
+  updated_at: string | null;
   sets: {
     weight: number;
     set_number: number;
@@ -99,7 +99,7 @@ export function ExerciseCard({
           .select("*")
           .eq("exercise_id", exerciseId)
           .eq("status", "completed")
-          .order("created_at", { ascending: false })
+          .order("updated_at", { ascending: false })
           .limit(10)) as {
           data: WorkoutExercise[] | null;
           error: PostgrestError | null;
@@ -149,6 +149,7 @@ export function ExerciseCard({
       // Combine the data
       const history: ExerciseHistory[] = workoutExercises.map((we) => {
         const workout = workouts?.find((w) => w.id === we.workout_id);
+
         const sets =
           exerciseSets
             ?.filter((set) => set.workout_exercise_id === we.id)
@@ -158,10 +159,12 @@ export function ExerciseCard({
             })) || [];
 
         return {
-          completed_at: workout?.date || null,
+          updated_at: workout?.updated_at || null,
           sets: sets,
         };
       });
+
+      console.log("Exercise history:", history);
 
       setExerciseHistory(history);
     } catch (err) {
@@ -344,12 +347,15 @@ export function ExerciseCard({
                             <tr key={`${historyIndex}-${setIndex}`}>
                               {setIndex === 0 && (
                                 <td rowSpan={history.sets.length}>
-                                  {history.completed_at
+                                  {history.updated_at
                                     ? format(
-                                        new Date(history.completed_at),
+                                        new Date(history.updated_at),
                                         "MMM d, yyyy"
                                       )
                                     : "N/A"}
+                                  <div style={{ display: "none" }}>
+                                    Raw date: {history.updated_at}
+                                  </div>
                                 </td>
                               )}
                               <td>{set.set_number}</td>
