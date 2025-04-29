@@ -515,7 +515,7 @@ export function ExerciseCard({
           }
 
           .history-table tr:last-child td {
-            border-bottom: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
           }
 
           .loading,
