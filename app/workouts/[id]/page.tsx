@@ -32,6 +32,7 @@ type WorkoutExercise = {
 type WorkoutData = {
   id: number;
   name: string;
+  title: string;
   type: string;
   date: Date;
   benefit: string | null;
@@ -131,6 +132,7 @@ export default function WorkoutPage() {
         setWorkoutData({
           id: workout.id,
           name: workout.name,
+          title: workout.title,
           type: workout.type,
           date: new Date(workout.date),
           benefit: workout.benefit,
@@ -247,7 +249,7 @@ export default function WorkoutPage() {
     <AppLayout>
       <div className="pb-6">
         <Header
-          title={workoutData.name}
+          title={workoutData.title}
           showBackButton
           onBackClick={handleBack}
           isFlushWithTop={true}
