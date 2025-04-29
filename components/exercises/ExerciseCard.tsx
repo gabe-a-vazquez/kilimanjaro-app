@@ -10,6 +10,8 @@ import React, {
 } from "react";
 import { createClient } from "@/lib/supabase";
 import { Database } from "@/lib/database.types";
+import { format } from "date-fns";
+import { PostgrestError } from "@supabase/supabase-js";
 
 interface ExerciseCardProps {
   name: string;
@@ -37,6 +39,15 @@ export const useExerciseContext = () => {
   return context;
 };
 
+interface ExerciseHistory {
+  completed_at: string | null;
+  sets: {
+    weight: number;
+    set_number: number;
+    is_completed: boolean;
+  }[];
+}
+
 export function ExerciseCard({
   name,
   children,
@@ -48,6 +59,8 @@ export function ExerciseCard({
   const [isSaving, setIsSaving] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [exerciseHistory, setExerciseHistory] = useState<ExerciseHistory[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const supabase = createClient();
 
   const checkCompletionStatus = useCallback(async () => {
@@ -72,9 +85,103 @@ export function ExerciseCard({
     }
   }, [supabase, workoutId, exerciseId]);
 
+  const fetchExerciseHistory = async () => {
+    setIsLoading(true);
+    try {
+      type WorkoutExercise =
+        Database["public"]["Tables"]["workout_exercises"]["Row"];
+      type Workout = Database["public"]["Tables"]["workouts"]["Row"];
+      type ExerciseSet = Database["public"]["Tables"]["exercise_sets"]["Row"];
+
+      // First get the workout exercises
+      const { data: workoutExercises, error: workoutExercisesError } =
+        (await supabase
+          .from("workout_exercises")
+          .select("*")
+          .eq("exercise_id", exerciseId)
+          .eq("status", "completed")
+          .order("created_at", { ascending: false })
+          .limit(10)) as {
+          data: WorkoutExercise[] | null;
+          error: PostgrestError | null;
+        };
+
+      if (workoutExercisesError) {
+        console.error(
+          "Error fetching workout exercises:",
+          workoutExercisesError
+        );
+        return;
+      }
+
+      if (!workoutExercises?.length) {
+        setExerciseHistory([]);
+        return;
+      }
+
+      // Then get the workouts to get completion dates
+      const { data: workouts, error: workoutsError } = (await supabase
+        .from("workouts")
+        .select("*")
+        .in(
+          "id",
+          workoutExercises.map((we) => we.workout_id)
+        )) as { data: Workout[] | null; error: PostgrestError | null };
+
+      if (workoutsError) {
+        console.error("Error fetching workouts:", workoutsError);
+        return;
+      }
+
+      // Finally get the exercise sets
+      const { data: exerciseSets, error: setsError } = (await supabase
+        .from("exercise_sets")
+        .select("*")
+        .in(
+          "workout_exercise_id",
+          workoutExercises.map((we) => we.id)
+        )) as { data: ExerciseSet[] | null; error: PostgrestError | null };
+
+      if (setsError) {
+        console.error("Error fetching exercise sets:", setsError);
+        return;
+      }
+
+      // Combine the data
+      const history: ExerciseHistory[] = workoutExercises.map((we) => {
+        const workout = workouts?.find((w) => w.id === we.workout_id);
+        const sets =
+          exerciseSets
+            ?.filter((set) => set.workout_exercise_id === we.id)
+            .map((set) => ({
+              weight: set.weight || 0,
+              set_number: set.set_number || 1,
+              is_completed: set.is_completed || false,
+            })) || [];
+
+        return {
+          completed_at: workout?.date || null,
+          sets: sets,
+        };
+      });
+
+      setExerciseHistory(history);
+    } catch (err) {
+      console.error("Unexpected error fetching exercise history:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     checkCompletionStatus();
   }, [checkCompletionStatus]);
+
+  useEffect(() => {
+    if (isModalOpen) {
+      fetchExerciseHistory();
+    }
+  }, [isModalOpen]);
 
   const handleSave = async () => {
     try {
@@ -219,7 +326,45 @@ export function ExerciseCard({
                 </button>
               </div>
               <div className="modal-body">
-                <p>Progress chart will be implemented here</p>
+                {isLoading ? (
+                  <div className="loading">Loading history...</div>
+                ) : exerciseHistory.length === 0 ? (
+                  <div className="no-history">No previous history found</div>
+                ) : (
+                  <div className="history-table-container">
+                    <table className="history-table">
+                      <thead>
+                        <tr>
+                          <th>Date</th>
+                          <th>Set</th>
+                          <th>Weight</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {exerciseHistory.map((history, historyIndex) =>
+                          history.sets.map((set, setIndex) => (
+                            <tr key={`${historyIndex}-${setIndex}`}>
+                              {setIndex === 0 && (
+                                <td rowSpan={history.sets.length}>
+                                  {history.completed_at
+                                    ? format(
+                                        new Date(history.completed_at),
+                                        "MMM d, yyyy"
+                                      )
+                                    : "N/A"}
+                                </td>
+                              )}
+                              <td>{set.set_number}</td>
+                              <td>{set.weight} lbs</td>
+                              <td>{set.is_completed ? "✓" : "–"}</td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -341,8 +486,45 @@ export function ExerciseCard({
             background: rgba(255, 255, 255, 0.1);
           }
 
-          .modal-body {
+          .history-table-container {
+            width: 100%;
+            overflow-x: auto;
+          }
+
+          .history-table {
+            width: 100%;
+            border-collapse: collapse;
             color: rgba(255, 255, 255, 0.9);
+            text-align: left;
+          }
+
+          .history-table th,
+          .history-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          }
+
+          .history-table th {
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+          }
+
+          .history-table tr:last-child td {
+            border-bottom: none;
+          }
+
+          .loading,
+          .no-history {
+            text-align: center;
+            padding: 2rem;
+            color: rgba(255, 255, 255, 0.6);
+          }
+
+          .modal-body {
+            padding: 0.5rem;
           }
         `}</style>
 
