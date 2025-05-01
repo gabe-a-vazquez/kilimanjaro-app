@@ -59,7 +59,7 @@ export function RestInput({
           background: rgba(26, 69, 52, 0.3);
           border-radius: 10px;
           padding: 0.35rem 0.5rem;
-          width: 90px;
+          width: 75px;
           box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2),
             0 1px 1px rgba(255, 255, 255, 0.05);
           border: 1px solid rgba(255, 255, 255, 0.1);
@@ -72,7 +72,7 @@ export function RestInput({
         }
 
         .rest-value-input {
-          width: 45px;
+          width: 35px;
           background: transparent;
           border: none;
           color: white;
