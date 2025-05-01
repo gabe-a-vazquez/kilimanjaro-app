@@ -12,6 +12,7 @@ import TipsList from "@/components/exercises/TipsList";
 import Button from "@/components/ui/Button";
 import confetti from "canvas-confetti";
 import { Database } from "@/lib/database.types";
+import RepsInput from "@/components/exercises/RepsInput";
 
 type WorkoutExercise = {
   id: number;
@@ -284,7 +285,18 @@ export default function WorkoutPage() {
                           key={index}
                           number={setNumber}
                           details={[
-                            { label: "REPS", value: exercise.reps },
+                            {
+                              label: "",
+                              value: (
+                                <RepsInput
+                                  initialValue={exercise.reps}
+                                  workoutExerciseId={
+                                    exercise.workout_exercise_id
+                                  }
+                                  exerciseId={exercise.id}
+                                />
+                              ),
+                            },
                             {
                               label: "REST",
                               value:

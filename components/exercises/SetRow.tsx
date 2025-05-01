@@ -4,7 +4,7 @@ import React from "react";
 
 interface SetDetail {
   label: string;
-  value: string | number;
+  value: string | number | React.ReactNode;
 }
 
 interface SetRowProps {
