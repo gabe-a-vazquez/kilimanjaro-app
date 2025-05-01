@@ -54,6 +54,8 @@ export default function WorkoutPage() {
   const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
   const workoutId = params?.id as string;
+  const [reps, setReps] = useState<Record<number, number>>({});
+  const [restTimes, setRestTimes] = useState<Record<number, number>>({});
 
   useEffect(() => {
     async function fetchWorkoutData() {
@@ -272,6 +274,8 @@ export default function WorkoutPage() {
               exerciseId={exercise.id}
               workoutId={workoutData.id}
               weight={weights[exercise.id] || {}}
+              reps={reps[exercise.workout_exercise_id]}
+              restTime={restTimes[exercise.workout_exercise_id]}
             >
               <div className="mt-4 space-y-4">
                 <div>
@@ -291,10 +295,12 @@ export default function WorkoutPage() {
                               value: (
                                 <RepsInput
                                   initialValue={exercise.reps}
-                                  workoutExerciseId={
-                                    exercise.workout_exercise_id
-                                  }
-                                  exerciseId={exercise.id}
+                                  onChange={(value) => {
+                                    setReps((prev) => ({
+                                      ...prev,
+                                      [exercise.workout_exercise_id]: value,
+                                    }));
+                                  }}
                                 />
                               ),
                             },
@@ -304,9 +310,12 @@ export default function WorkoutPage() {
                                 index < exercise.sets - 1 ? (
                                   <RestInput
                                     initialValue={exercise.restTime}
-                                    workoutExerciseId={
-                                      exercise.workout_exercise_id
-                                    }
+                                    onChange={(value) => {
+                                      setRestTimes((prev) => ({
+                                        ...prev,
+                                        [exercise.workout_exercise_id]: value,
+                                      }));
+                                    }}
                                   />
                                 ) : null,
                             },

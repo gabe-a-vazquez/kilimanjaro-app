@@ -2,26 +2,21 @@
 
 import React, { useState, ChangeEvent } from "react";
 import { useExerciseContext } from "./ExerciseCard";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 interface RepsInputProps {
   initialValue?: number;
   onChange?: (value: number) => void;
   className?: string;
-  exerciseId?: number;
-  workoutExerciseId?: number;
 }
 
 export function RepsInput({
   initialValue = 0,
   onChange,
   className = "",
-  workoutExerciseId,
 }: RepsInputProps) {
   const [value, setValue] = useState(initialValue);
   const [isFocused, setIsFocused] = useState(false);
   const { isCompleted } = useExerciseContext();
-  const supabase = createClientComponentClient();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (isCompleted) return;
@@ -29,19 +24,6 @@ export function RepsInput({
     const newValue = Math.min(Math.max(Number(e.target.value), 0), 100); // Reasonable max for reps
     setValue(newValue);
     onChange?.(newValue);
-
-    // Update the workout_exercises table with new reps value
-    if (workoutExerciseId) {
-      supabase
-        .from("workout_exercises")
-        .update({ reps: newValue })
-        .eq("id", workoutExerciseId)
-        .then(({ error }) => {
-          if (error) {
-            console.error("Error updating reps:", error);
-          }
-        });
-    }
   };
 
   const handleFocus = () => {

@@ -21,6 +21,8 @@ interface ExerciseCardProps {
   exerciseId: number;
   workoutId: number;
   weight: Record<number, number>;
+  reps?: number;
+  restTime?: number;
 }
 
 interface ExerciseContextType {
@@ -54,6 +56,8 @@ export function ExerciseCard({
   exerciseId,
   workoutId,
   weight,
+  reps,
+  restTime,
 }: ExerciseCardProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
@@ -209,6 +213,27 @@ export function ExerciseCard({
         throw new Error(
           `Failed to fetch workout exercise: ${fetchError.message}`
         );
+      }
+
+      // Update the workout exercise with new reps and rest time if provided
+      if (reps !== undefined || restTime !== undefined) {
+        type WorkoutExerciseUpdate = {
+          reps?: number;
+          rest_time?: number;
+        };
+        const updateData: WorkoutExerciseUpdate = {};
+        if (reps !== undefined) updateData.reps = reps;
+        if (restTime !== undefined) updateData.rest_time = restTime;
+
+        const { error: updateError } = await supabase
+          .from("workout_exercises")
+          .update(updateData)
+          .eq("id", workoutExercise.id);
+
+        if (updateError) {
+          console.error("Error updating exercise:", updateError);
+          throw new Error(`Failed to update exercise: ${updateError.message}`);
+        }
       }
 
       // Create exercise sets if they don't exist

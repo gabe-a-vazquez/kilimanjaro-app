@@ -2,25 +2,21 @@
 
 import React, { useState, ChangeEvent } from "react";
 import { useExerciseContext } from "./ExerciseCard";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 interface RestInputProps {
   initialValue?: number;
   onChange?: (value: number) => void;
   className?: string;
-  workoutExerciseId?: number;
 }
 
 export function RestInput({
   initialValue = 0,
   onChange,
   className = "",
-  workoutExerciseId,
 }: RestInputProps) {
   const [value, setValue] = useState(initialValue);
   const [isFocused, setIsFocused] = useState(false);
   const { isCompleted } = useExerciseContext();
-  const supabase = createClientComponentClient();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (isCompleted) return;
@@ -28,19 +24,6 @@ export function RestInput({
     const newValue = Math.min(Math.max(Number(e.target.value), 0), 300); // Max 5 minutes (300 seconds)
     setValue(newValue);
     onChange?.(newValue);
-
-    // Update the workout_exercises table with new rest_time value
-    if (workoutExerciseId) {
-      supabase
-        .from("workout_exercises")
-        .update({ rest_time: newValue })
-        .eq("id", workoutExerciseId)
-        .then(({ error }) => {
-          if (error) {
-            console.error("Error updating rest time:", error);
-          }
-        });
-    }
   };
 
   const handleFocus = () => {
