@@ -37,25 +37,11 @@ export function WeightInput({
 
       // Skip if no exerciseId, already completed, already has a value, or already fetched
       if (!exerciseIdNumber || isCompleted || initialValue > 0 || hasFetched) {
-        console.log(
-          "Skipping fetch - exerciseId:",
-          exerciseIdNumber,
-          "isCompleted:",
-          isCompleted,
-          "initialValue:",
-          initialValue,
-          "hasFetched:",
-          hasFetched
-        );
         return;
       }
 
       try {
         // First get all workout_exercise_ids for this exercise
-        console.log(
-          "Fetching workout exercises for exerciseId:",
-          exerciseIdNumber
-        );
         const { data: workoutExercises, error: workoutError } = await supabase
           .from("workout_exercises")
           .select("id")
@@ -66,14 +52,9 @@ export function WeightInput({
           return;
         }
 
-        console.log("Found workout exercises:", workoutExercises);
         const workoutExerciseIds = workoutExercises.map((we) => we.id);
 
         // Then get the heaviest weight from completed sets for these workout exercises
-        console.log(
-          "Fetching heaviest weight for workout exercise IDs:",
-          workoutExerciseIds
-        );
         const { data, error } = await supabase
           .from("exercise_sets")
           .select("weight")
@@ -82,7 +63,6 @@ export function WeightInput({
           .order("weight", { ascending: false })
           .limit(1);
 
-        console.log("Heaviest weight data:", data);
         if (error) {
           console.error("Error fetching heaviest weight:", error);
           return;

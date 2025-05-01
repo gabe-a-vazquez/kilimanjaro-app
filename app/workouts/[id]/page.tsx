@@ -13,6 +13,7 @@ import Button from "@/components/ui/Button";
 import confetti from "canvas-confetti";
 import { Database } from "@/lib/database.types";
 import RepsInput from "@/components/exercises/RepsInput";
+import RestInput from "@/components/exercises/RestInput";
 
 type WorkoutExercise = {
   id: number;
@@ -298,11 +299,16 @@ export default function WorkoutPage() {
                               ),
                             },
                             {
-                              label: "REST",
+                              label: "",
                               value:
-                                index < exercise.sets - 1
-                                  ? `${exercise.restTime}s`
-                                  : "0s",
+                                index < exercise.sets - 1 ? (
+                                  <RestInput
+                                    initialValue={exercise.restTime}
+                                    workoutExerciseId={
+                                      exercise.workout_exercise_id
+                                    }
+                                  />
+                                ) : null,
                             },
                           ]}
                           rightElement={
