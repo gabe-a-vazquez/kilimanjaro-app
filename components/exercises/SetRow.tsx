@@ -22,7 +22,7 @@ const SetRow: React.FC<SetRowProps> = ({
 }) => {
   return (
     <div className={`set-row ${className}`}>
-      <div className="set-label">Set {number}</div>
+      <div className="set-label">{number}</div>
       <div className="set-details">
         {details.map((detail, index) => (
           <div key={index} className="set-detail">
